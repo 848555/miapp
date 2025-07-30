@@ -1,0 +1,734 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Outfit', sans-serif;
+}
+
+body {
+  width: 100%;
+  background-color: aqua;
+}
+
+.contenedor{
+position: absolute;    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 330px;
+    height: 460px;
+    background: rgb(247, 248, 250);
+    border-radius: 30px;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+    -ms-border-radius: 30px;
+    -o-border-radius: 30px;
+    line-height: 2;
+}
+li{
+  color: black;
+  text-decoration: none;
+  font-size: 17px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.logo {
+  position: absolute;
+  top: 20%; /* puedes ajustar esta distancia vertical si deseas */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 230px;
+  background: url(imagenes/imagen.jpeg);
+  background-position: center;
+  background-size: cover;
+  filter: drop-shadow(0px 7px 20px blue);
+  animation: orbitar 4s ease-in-out infinite;
+  transition: animation-duration 0.3s ease;
+}
+
+.logo:hover {
+  animation-duration: 2s;
+}
+
+@keyframes orbitar {
+  0% {
+    transform: translateX(-50%) translate(0px, 0px) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-50%) translate(5px, -5px) rotate(1deg);
+  }
+  50% {
+    transform: translateX(-50%) translate(0px, -10px) rotate(0deg);
+  }
+  75% {
+    transform: translateX(-50%) translate(-5px, -5px) rotate(-1deg);
+  }
+  100% {
+    transform: translateX(-50%) translate(0px, 0px) rotate(0deg);
+  }
+}
+
+
+.bottom_part{
+  width: 20rem;
+  height: 20rem;
+  position: absolute;
+  bottom: -94px;
+  background: #242424;
+  border-radius:50% ;
+  -webkit-border-radius:50% ;
+  -moz-border-radius:50% ;
+  -ms-border-radius:50% ;
+  -o-border-radius:50% ;
+  box-shadow: inset 0px 0px 10px 10px;
+  transform: rotatex(90deg);
+  -webkit-transform: rotatex(90deg);
+  -moz-transform: rotatex(90deg);
+  -ms-transform: rotatex(90deg);
+  -o-transform: rotatex(90deg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.bottom_part::before{
+  content: "";
+  width: 16rem;
+  height: 16rem;
+  position: absolute;
+  bottom: 5rem;
+  background:blue;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+  box-shadow: inset 0px 0px 10px blue;
+  filter: blur(30px);
+  -webkit-filter: blur(30px);
+}
+.logo:hover{
+  cursor: pointer;
+}
+.info{
+  text-align: center;
+  color: blue;
+}
+
+ .cliente a{
+  position:relative;
+     text-decoration: none;
+     color: blue;
+     left: 10px;
+     cursor: pointer;
+     font-family: Arial, Helvetica, sans-serif;
+     border: 1px solid #ccc;
+     border-radius: 10px;
+     -webkit-border-radius: 10px;
+     -moz-border-radius: 10px;
+     -ms-border-radius: 10px;
+     -o-border-radius: 10px;
+     line-height: 40;
+     
+ }
+
+ .menu-horizontal{
+	list-style: none;
+	display: flex;
+	justify-content: space-around;
+}
+.menu-horizontal > li > a{
+	display: block;
+	padding: 15px 20px;
+	color: black;
+	text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.mensaje {
+  text-align: center;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+ .inputs .text{
+  line-height: 1;
+ }
+.inputs.a:hover{
+  color: rgb(63, 201, 201);
+}
+
+/*-----------------se almacena el color de la barra lateral*/
+:root{
+  --color-barra-lateral:rgb(255,255,255);
+
+  --color-texto:rgb(0,0,0);
+  --color-texto-menu:rgb(134,136,144);
+
+  --color-menu-hover:rgb(238,238,238);
+  --color-menu-hover-texto:rgb(0,0,0);
+
+  --color-boton:rgb(0,0,0);
+  --color-boton-texto:rgb(255,255,255);
+
+  --color-linea:rgb(180,180,180);
+
+  --color-switch-base :rgb(201,202,206);
+  --color-switch-circulo:rgb(241,241,241);
+
+  --color-scroll:rgb(192,192,192);
+  --color-scroll-hover:rgb(134,134,134);
+}
+
+.dark-mode{
+  --color-barra-lateral:rgb(44,45,49);
+
+  --color-texto:rgb(255,255,255);
+  --color-texto-menu:rgb(110,110,117);
+
+  --color-menu-hover:rgb(0,0,0);
+  --color-menu-hover-texto:rgb(238,238,238);
+
+  --color-boton:rgb(255,255,255);
+  --color-boton-texto:rgb(0,0,0);
+
+  --color-linea:rgb(90,90,90);
+
+  --color-switch-base :rgb(39,205,64);
+  --color-switch-circulo:rgb(255,255,255);
+
+  --color-scroll:rgb(68,69,74);
+  --color-scroll-hover:rgb(85,85,85);
+}
+
+.menu {
+  position: fixed;
+  width: 80px;
+  height: 80px;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: var(--color-boton);
+  color: var(--color-boton-texto);
+  right: 20px;
+  top: 20px;
+  z-index: 100;
+}
+.menu icon-icon:nth-child(2){
+  display: none;
+}
+
+/*----------------Barra Lateral*/
+.barra-lateral{
+  position: fixed;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 250px;
+  height: 100%;
+  overflow: hidden;
+  padding: 20px 15px;
+  background-color: var(--color-barra-lateral);
+  transition: width 0.5s ease,background-color 0.3s ease,left 0.5s ease;
+  z-index: 50;
+  -webkit-transition: width 0.5s ease,background-color 0.3s ease,left 0.5s ease;
+  -moz-transition: width 0.5s ease,background-color 0.3s ease,left 0.5s ease;
+  -ms-transition: width 0.5s ease,background-color 0.3s ease,left 0.5s ease;
+  -o-transition: width 0.5s ease,background-color 0.3s ease,left 0.5s ease;
+}
+
+.mini-barra-lateral{
+  width: 80px;
+}
+.barra-lateral span{
+  width: 100px;
+  white-space: nowrap;
+  font-size: 18px;
+  text-align: left;
+  opacity: 1;
+  transition: opacity 0.5s ease,width 0.5s ease;
+}
+.barra-lateral span.oculto{
+  opacity: 0;
+  width: 0;
+}
+
+
+
+
+/*--------------> Menu Navegación*/
+.barra-lateral .navegacion{
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.barra-lateral .navegacion::-webkit-scrollbar{
+  width: 5px;
+}
+.barra-lateral .navegacion::-webkit-scrollbar-thumb{
+  background-color: var(--color-scroll);
+  border-radius: 5px;
+}
+.barra-lateral .navegacion::-webkit-scrollbar-thumb:hover{
+  background-color: var(--color-scroll-hover);
+}
+.barra-lateral .navegacion li{  
+  list-style: none;
+  display: flex;
+  margin-bottom: 5px;
+}
+.barra-lateral .navegacion a{
+  width: 100%;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  border-radius: 10px;
+  color: var(--color-texto-menu);
+}
+.barra-lateral .navegacion a:hover{
+  background-color: var(--color-menu-hover);
+  color: var(--color-menu-hover-texto);
+}
+.barra-lateral .navegacion ion-icon{
+  min-width: 50px;
+  font-size: 20px;
+}
+
+/*-----------------> Linea*/
+.barra-lateral .linea{
+  width: 100%;
+  height: 1px;
+  margin-top: 15px;
+  background-color: var(--color-linea);
+}
+
+/*----------------> Modo Oscuro*/
+.barra-lateral .modo-oscuro{
+  width: 100%;
+  margin-bottom: 80px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+.barra-lateral .modo-oscuro .info{
+  width: 150px;
+  height: 45px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  color: var(--color-texto-menu);
+}
+.barra-lateral .modo-oscuro ion-icon{
+
+  width: 50px;
+  font-size: 20px;
+}
+
+/*--->switch*/
+.barra-lateral .modo-oscuro .switch{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 50px;
+  height: 45px;
+  cursor: pointer;
+}
+.barra-lateral .modo-oscuro .base{
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 35px;
+  height: 20px;
+  background-color: var(--color-switch-base);
+  border-radius: 50px;
+}
+.barra-lateral .modo-oscuro .circulo{
+  position: absolute;
+  width: 18px;
+  height: 90%;
+  background-color: var(--color-switch-circulo);
+  border-radius: 50%;
+  left: 2px;
+  transition: left 0.5s ease;
+}
+
+
+/*---------------> Usuario*/
+.barra-lateral .usuario{
+  width: 100%;
+  display: flex;
+}
+.barra-lateral .usuario img{
+  width: 50px;
+  min-width: 50px;
+  border-radius: 10px;
+}
+.barra-lateral .usuario .info-usuario{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--color-texto);
+  overflow: hidden;
+}
+.barra-lateral .usuario .nombre{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-left: 5px;
+}
+.barra-lateral .usuario .nombre{
+  font-size: 15px;
+  font-weight: 600;
+}
+.barra-lateral .usuario .email{
+  font-size: 13px;
+}
+.barra-lateral .usuario ion-icon{
+  font-size: 20px;
+}
+
+#inbox{
+  background-color: var(--color-menu-hover);
+  color: var(--color-menu-hover-texto);
+}
+main{
+  margin-left: 250px;
+  padding: 20px;
+  transition: margin-left 0.5s ease;
+}
+main.min-main{
+  margin-left: 80px;
+}
+
+.mensaje {
+  color: rgb(12, 212, 102);
+  background-color: #dff0d8;
+  padding: 1px;
+  margin-bottom: 1px;
+  border: 1px solid #d6e9c6;
+  border-radius: 1px;
+  -webkit-border-radius: 1px;
+  -moz-border-radius: 1px;
+  -ms-border-radius: 1px;
+  -o-border-radius: 1px;
+}
+
+
+/* Estilos para el modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.modal-ul li {
+  background-color: #f9f9f9;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-left: 5px solid #007BFF;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.modal-ul li:hover {
+  background-color: #f0f0f0;
+}
+
+.modal-ul li em {
+  display: block;
+  color: #888;
+  font-size: 0.9em;
+  margin-top: 5px;
+}
+
+/* Estilos específicos para el input de contraseña dentro del modal */
+.modal-ul li {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.modal-ul li span.mensa {
+  font-size: 14px; /* Ajusta el tamaño de fuente según sea necesario */
+  margin-bottom: 5px; /* Espacio debajo del span */
+}
+
+.modal-ul li input[type="password"] {
+  width: calc(100% - 20px); /* Ancho del input menos el padding */
+  padding: 8px;
+  font-size: 16px;
+  margin-bottom: 10px; /* Espacio debajo del input */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* Estilo para el botón dentro del modal */
+.modal-ul li button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.modal-ul li button:hover {
+  background-color: #0056b3;
+}
+
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  margin-left: 20px; /* Ajusta según necesites */
+  
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #fff; /* Fondo blanco */
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 5px; /* Añade bordes redondeados */
+  padding: 8px 0;
+  text-align: left;
+}
+
+.dropdown-content a {
+  display: block;
+  padding: 10px;
+  color: black;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1; /* Color de fondo al pasar el ratón */
+}
+
+/*.dropdown:hover .dropdown-content {
+  display: block;
+}*/
+
+.mensa {
+  font-family: Arial, sans-serif;
+  font-size: 10px; /* Tamaño de fuente pequeño */
+  color: #333;
+}
+.error-message {
+  color: #ff0000; /* Color rojo para indicar un mensaje de error */
+  font-weight: bold; /* Fuente en negrita para hacer el mensaje más destacado */
+  margin: 10px 0; /* Espacio alrededor del mensaje */
+  padding: 10px; /* Relleno dentro del contenedor del mensaje */
+  background-color: #ffe6e6; /* Fondo color pastel para resaltar el mensaje */
+  border: 1px solid #ff9999; /* Borde rojo claro alrededor del mensaje */
+  border-radius: 5px; /* Bordes redondeados para el contenedor del mensaje */
+}
+/*------------------> Responsive*/
+/* Estilos para altura máxima de 660px */
+@media (max-height: 660px) {
+  .barra-lateral .nombre-pagina {
+    margin-bottom: 5px;
+  }
+  .barra-lateral .modo-oscuro {
+    margin-bottom: 3px;
+  }
+}
+
+/* Estilos para ancho máximo de 600px */
+@media (max-width: 600px) {
+  .barra-lateral {
+    position: fixed;
+    left: 0px;
+  }
+  .max-barra-lateral {
+    left: 0;
+  }
+  .menu {
+    display: flex;
+  }
+  .menu ion-icon:nth-child(2) {
+    display: none;
+  }
+  main,
+  main.min-main {
+    margin-left: 0;
+  }
+}
+
+
+
+
+/* Estilos para el ícono de accesibilidad */
+#accessibility-icon {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background-color: #3a6bb3;
+  padding: 10px;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+#accessibility-icon i {
+  font-size: 24px;
+}
+
+/* Estilos para los controles de accesibilidad */
+.accessibility-controls {
+  position: fixed;
+  bottom: 80px; /* Ajusta para que el panel esté sobre el ícono */
+  right: 20px;
+  background-color: #0a0a0a;
+  padding: 15px;
+  border-radius: 10px;
+  z-index: 1000;
+}
+
+.accessibility-controls button {
+  display: block;
+  margin-bottom: 20px;
+  background-color: aqua;
+  color: rgb(8, 8, 8);
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Evitar que el texto grande y el contraste afecten al diseño */
+body.large-text * {
+  font-size: inherit; /* Evitar que afecte las imágenes o el diseño */
+}
+
+body.high-contrast img {
+  filter: none; /* Asegurarse de que las imágenes no se vean afectadas */
+}
+
+/* Contraste alto */
+body.high-contrast, nav.high-contrast, .barra-lateral.high-contrast {
+  background-color: black;
+  color: black;}
+
+.high-contrast .navegacion a, 
+.high-contrast .usuario {
+  color:  rgb(7, 6, 6);}
+  
+
+.high-contrast ion-icon {
+  color:  white;}
+
+.high-contrast button {
+  background-color: white;
+  color: black;
+}
+
+
+
+/* Otros ajustes para asegurar que el contraste esté bien */
+.high-contrast .modal-content {
+  background-color: #333;
+  color: white;
+}
+
+/* Estilos generales del modo oscuro */
+body.modo-oscuro {
+  background-color: #121212; /* Fondo oscuro */
+  color: #e0e0e0; /* Texto claro */
+}
+
+/* Estilo del menú en modo oscuro */
+body.modo-oscuro .menu,
+body.modo-oscuro .barra-lateral {
+  background-color: #1e1e1e; /* Fondo oscuro para menú y barra lateral */
+}
+
+/* Estilo de los íconos en modo oscuro */
+body.modo-oscuro ion-icon {
+  color: #e0e0e0; /* Color claro para íconos */
+}
+
+/* Estilo del panel de accesibilidad */
+.modo-oscuro .modo-oscuro .switch .circulo {
+  background-color: #fff; /* Color del círculo en modo oscuro */
+}
+
+/* Estilo del panel de accesibilidad */
+.modo-oscuro .modo-oscuro {
+  background-color: #1e1e1e; /* Fondo oscuro para el panel */
+  color: #e0e0e0; /* Texto claro */
+}
+
+.modo-oscuro .modo-oscuro .info ion-icon {
+  color: #e0e0e0; /* Color del ícono en el panel de accesibilidad */
+}
+
+.modo-oscuro .modo-oscuro .switch .base {
+  background-color: #333; /* Fondo del interruptor en modo oscuro */
+}
+
+.modo-oscuro .modo-oscuro .switch .circulo {
+  background-color: #e0e0e0; /* Color del círculo del interruptor en modo oscuro */
+}
+
+
+
+
+

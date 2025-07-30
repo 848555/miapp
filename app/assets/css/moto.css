@@ -1,0 +1,40 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #007bff;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+}
+
+main {
+    padding: 20px;
+}
+
+h2 {
+    text-align: center;
+}
+
+.link {
+    list-style-type: none;
+    cursor: pointer;
+    text-decoration: none;
+    color: #007bff;
+    right: 100px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.info{
+   font-family: Arial, Helvetica, sans-serif;
+    text-justify: inter-word;
+
+}
+@media(max-width:991px)and (min-width:768px){
+
+}
+
+ 

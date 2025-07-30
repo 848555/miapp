@@ -1,0 +1,310 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "-05:00";
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS=0;
+
+-- --------------------------------------------------------
+-- Tabla: roles
+-- --------------------------------------------------------
+CREATE TABLE `roles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `roles` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+INSERT INTO `roles` (`id`, `roles`) VALUES
+(1, 'administrador'),
+(2, 'usuario');
+
+-- --------------------------------------------------------
+-- Tabla: usuarios
+-- --------------------------------------------------------
+CREATE TABLE `usuarios` (
+  `id_usuarios` int(11) NOT NULL AUTO_INCREMENT,
+  `Nombres` varchar(50) NOT NULL,
+  `Apellidos` varchar(50) NOT NULL,
+  `DNI` varchar(50) NOT NULL,
+  `fecha_de_nacimiento` date NOT NULL,
+  `telefono` varchar(50) NOT NULL,
+  `Departamento` varchar(250) NOT NULL,
+  `Ciudad` varchar(250) NOT NULL,
+  `Direccion` varchar(250) NOT NULL,
+  `Usuario` varchar(50) NOT NULL,
+  `Password` varchar(50) NOT NULL,
+  `Estado` varchar(50) NOT NULL,
+  `rol` int(11) NOT NULL,
+  PRIMARY KEY (`id_usuarios`),
+  KEY `rol` (`rol`),
+  CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`rol`) REFERENCES `roles` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+INSERT INTO `usuarios` VALUES
+(3, 'ANDRE', 'mercado', '1123401924', '2001-10-07', '3113354639', '', '', 'riohacha guajira', 'andres', '12345', 'activo', 1),
+(8, 'ALEJANDRO ELIAS', 'SALTARIN HERNANDEZ', '195007445', '1999-10-07', '3205077113', '', '', 'santana', 'alejandro', '1234', 'activo', 2);
+
+-- --------------------------------------------------------
+-- Tabla: acciones
+-- --------------------------------------------------------
+CREATE TABLE `acciones` (
+  `id_accion` int(11) NOT NULL AUTO_INCREMENT,
+  `id_administrador` int(11) NOT NULL,
+  `nombres` varchar(255) NOT NULL,
+  `apellidos` varchar(255) NOT NULL,
+  `DNI` varchar(20) NOT NULL,
+  `tipo_accion` enum('Eliminar','Editar','Agregar') NOT NULL,
+  `descripcion` text NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_accion`),
+  KEY `id_administrador` (`id_administrador`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+INSERT INTO `acciones` VALUES
+(1, 3, 'ANDRE', 'mercado', '1123401924', 'Eliminar', 'se registro a nuris ', '2025-04-23 22:46:58');
+
+-- --------------------------------------------------------
+-- Tabla: acciones_modulo
+-- --------------------------------------------------------
+CREATE TABLE `acciones_modulo` (
+  `id_accion_modulo` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre_accion` varchar(50) NOT NULL,
+  PRIMARY KEY (`id_accion_modulo`),
+  UNIQUE KEY `nombre_accion` (`nombre_accion`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+INSERT INTO `acciones_modulo` VALUES
+(1, 'agregar'), (2, 'editar'), (3, 'eliminar'), (4, 'sancionar'),
+(5, 'validar'), (6, 'rechazar'), (7, 'ver'), (8, 'asignar permisos'),
+(9, 'quitar permisos');
+
+-- --------------------------------------------------------
+-- Tabla: modulos
+-- --------------------------------------------------------
+CREATE TABLE `modulos` (
+  `id_modulo` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre_modulo` varchar(100) NOT NULL,
+  PRIMARY KEY (`id_modulo`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+INSERT INTO `modulos` VALUES
+(1, 'Gestión de Usuarios'), (2, 'Control de Documentos'),
+(3, 'Solicitudes de Servicio'), (4, 'Ganancias de la App'),
+(5, 'Acciones Registradas'), (6, 'Gestión de Permisos');
+
+-- --------------------------------------------------------
+-- Tabla: modulo_acciones
+-- --------------------------------------------------------
+CREATE TABLE `modulo_acciones` (
+  `id_modulo` int(11) NOT NULL,
+  `id_accion_modulo` int(11) NOT NULL,
+  PRIMARY KEY (`id_modulo`, `id_accion_modulo`),
+  KEY `id_accion_modulo` (`id_accion_modulo`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+INSERT INTO `modulo_acciones` VALUES
+(1, 1),(1, 2),(1, 3),(1, 4),
+(2, 3),(2, 5),(2, 6),
+(3, 3),
+(4, 3),
+(5, 7),
+(6, 8),(6, 9);
+
+-- --------------------------------------------------------
+-- Tabla: permisos_detallados
+-- --------------------------------------------------------
+CREATE TABLE `permisos_detallados` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_admin` int(11) NOT NULL,
+  `id_modulo` int(11) NOT NULL,
+  `id_accion_modulo` int(11) NOT NULL,
+  `permitido` tinyint(1) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `id_admin` (`id_admin`),
+  KEY `id_modulo` (`id_modulo`),
+  KEY `id_accion_modulo` (`id_accion_modulo`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+INSERT INTO `permisos_detallados` VALUES
+(387, 3, 5, 7, 1),
+(388, 3, 2, 3, 1),
+(389, 3, 2, 6, 1),
+(390, 3, 2, 5, 1),
+(391, 3, 4, 3, 1),
+(392, 3, 6, 8, 1),
+(393, 3, 6, 9, 1),
+(394, 3, 1, 2, 1),
+(395, 3, 1, 3, 1),
+(396, 3, 1, 4, 1),
+(397, 3, 3, 3, 1);
+
+-- --------------------------------------------------------
+-- Tabla: departamentos
+-- --------------------------------------------------------
+CREATE TABLE `departamentos` (
+  `id_departamentos` int(11) NOT NULL AUTO_INCREMENT,
+  `departamentos` varchar(450) DEFAULT NULL,
+  PRIMARY KEY (`id_departamentos`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+INSERT INTO `departamentos` VALUES
+(1, 'Amazonas'),(2, 'Antioquia'),(3, 'Arauca'),(4, 'Atlántico'),(5, 'Bolívar'),
+(6, 'Boyacá'),(7, 'Caldas'),(8, 'Caquetá'),(9, 'Casanare'),(10, 'Cauca'),
+(11, 'Cesar'),(12, 'Chocó'),(13, 'Córdoba'),(14, 'Cundinamarca'),(15, 'Guainía'),
+(16, 'Guaviare'),(17, 'Huila'),(18, 'La Guajira'),(19, 'Magdalena'),(20, 'Meta'),
+(21, 'Nariño'),(22, 'Norte de Santander'),(23, 'Putumayo'),(24, 'Quindío'),
+(25, 'Risaralda'),(26, 'San Andrés y Providencia'),(27, 'Santander'),
+(28, 'Sucre'),(29, 'Tolima'),(30, 'Valle del Cauca'),(31, 'Vaupés'),(32, 'Vichada');
+
+-- --------------------------------------------------------
+-- Tabla: ciudades
+-- --------------------------------------------------------
+CREATE TABLE `ciudades` (
+  `id_ciudades` int(11) NOT NULL AUTO_INCREMENT,
+  `id_departamentos` int(11) NOT NULL,
+  `ciudades` varchar(450) DEFAULT NULL,
+  PRIMARY KEY (`id_ciudades`),
+  KEY `id_departamentos` (`id_departamentos`),
+  CONSTRAINT `ciudades_ibfk_1` FOREIGN KEY (`id_departamentos`) REFERENCES `departamentos` (`id_departamentos`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+INSERT INTO `ciudades` VALUES
+(1, 1, 'Leticia'), (2, 2, 'Medellín'), (3, 2, 'Bello'), (4, 3, 'Arauca'),
+(5, 4, 'Barranquilla'), (6, 5, 'Cartagena'), (7, 6, 'Tunja'), (8, 7, 'Manizales'),
+(9, 8, 'Florencia'), (10, 9, 'Yopal'), (11, 10, 'Popayán'), (12, 11, 'Valledupar'),
+(13, 12, 'Quibdó'), (14, 13, 'Montería'), (15, 14, 'Bogotá'), (16, 15, 'Inírida'),
+(17, 16, 'San José del Guaviare'), (18, 17, 'Neiva'), (19, 18, 'Riohacha'),
+(20, 19, 'Santa Marta'), (21, 20, 'Villavicencio'), (22, 21, 'Pasto'),
+(23, 22, 'Cúcuta'), (24, 23, 'Mocoa'), (25, 24, 'Armenia'), (26, 25, 'Pereira'),
+(27, 26, 'San Andrés'), (28, 27, 'Bucaramanga'), (29, 28, 'Sincelejo'),
+(30, 29, 'Ibagué'), (31, 30, 'Cali'), (32, 31, 'Mitú'), (33, 32, 'Puerto Carreño');
+
+-- --------------------------------------------------------
+-- Tabla: documentos
+-- --------------------------------------------------------
+CREATE TABLE `documentos` (
+  `id_documentos` int(11) NOT NULL AUTO_INCREMENT,
+  `placa` varchar(20) NOT NULL,
+  `marca` varchar(50) NOT NULL,
+  `modelo` varchar(50) NOT NULL,
+  `color` varchar(50) NOT NULL,
+  `documento_verificado` varchar(50) NOT NULL,
+  `licencia_de_conducir` varchar(255),
+  `tarjeta_de_propiedad` varchar(255),
+  `soat` varchar(255),
+  `tecno_mecanica` varchar(255),
+  `id_usuarios` int(11) NOT NULL,
+  PRIMARY KEY (`id_documentos`),
+  KEY `id_usuarios` (`id_usuarios`),
+  CONSTRAINT `documentos_ibfk_1` FOREIGN KEY (`id_usuarios`) REFERENCES `usuarios` (`id_usuarios`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+-- --------------------------------------------------------
+-- Tabla: solicitudes
+-- --------------------------------------------------------
+CREATE TABLE `solicitudes` (
+  `id_solicitud` int(11) NOT NULL AUTO_INCREMENT,
+  `origen` varchar(255) NOT NULL,
+  `destino` varchar(255) NOT NULL,
+  `cantidad_personas` int(11) NOT NULL,
+  `cantidad_motos` int(11) NOT NULL,
+  `metodo_pago` enum('efectivo','nequi') NOT NULL,
+  `estado` enum('pendiente','aceptada','completada','cancelada') NOT NULL,
+  `id_usuarios` int(11) NOT NULL,
+  `costo_total` decimal(10,2) NOT NULL,
+  `retencion_total` decimal(10,2) NOT NULL,
+  `pago_completo` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id_solicitud`),
+  KEY `id_usuarios` (`id_usuarios`),
+  CONSTRAINT `solicitudes_ibfk_1` FOREIGN KEY (`id_usuarios`) REFERENCES `usuarios` (`id_usuarios`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `solicitudes` (`id_solicitud`, `origen`, `destino`, `cantidad_personas`, `cantidad_motos`, `metodo_pago`, `estado`, `id_usuarios`, `costo_total`, `retencion_total`, `pago_completo`) VALUES
+(6, 'Santa Ana ', 'Buenavista ', 1, 1, 'efectivo', 'cancelada', 8, '4000.00', '1000.00', 0),
+(9, 'cr40#14-16', 'cr40#14-13 nueva granada', 1, 1, 'efectivo', 'cancelada', 8, '4000.00', '1000.00', 0);
+
+-- --------------------------------------------------------
+-- Tabla: retenciones
+-- --------------------------------------------------------
+CREATE TABLE `retenciones` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuarios` int(11) NOT NULL,
+  `monto` decimal(10,2) NOT NULL,
+  `retencion` varchar(50) NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT current_timestamp(),
+  `pagado` tinyint(1) NOT NULL,
+  `id_solicitud` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_usuarios` (`id_usuarios`),
+  KEY `id_solicitud` (`id_solicitud`),
+  CONSTRAINT `retenciones_ibfk_1` FOREIGN KEY (`id_usuarios`) REFERENCES `usuarios` (`id_usuarios`),
+  CONSTRAINT `retenciones_ibfk_2` FOREIGN KEY (`id_solicitud`) REFERENCES `solicitudes` (`id_solicitud`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+-- --------------------------------------------------------
+-- Tabla: calificaciones_mototaxistas
+-- --------------------------------------------------------
+CREATE TABLE `calificaciones_mototaxistas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) DEFAULT NULL,
+  `id_solicitud` int(11) DEFAULT NULL,
+  `calificacion` int(11) DEFAULT NULL,
+  `fecha` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `comentario` TEXT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- --------------------------------------------------------
+-- Tabla: calificaciones_usuarios
+-- --------------------------------------------------------
+CREATE TABLE `calificaciones_usuarios` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) DEFAULT NULL,
+  `id_solicitud` int(11) DEFAULT NULL,
+  `calificacion` int(11) DEFAULT NULL,
+  `fecha` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `comentario` TEXT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+-- --------------------------------------------------------
+-- Tabla: mensajes_temporales
+-- --------------------------------------------------------
+CREATE TABLE `mensajes_temporales` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `id_solicitud` int(11) DEFAULT NULL,
+  `mensaje` text NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT current_timestamp(),
+  `leido` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_usuario` (`id_usuario`),
+  KEY `id_solicitud` (`id_solicitud`),
+  CONSTRAINT `mensajes_temporales_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuarios`),
+  CONSTRAINT `mensajes_temporales_ibfk_2` FOREIGN KEY (`id_solicitud`) REFERENCES `solicitudes` (`id_solicitud`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+-- --------------------------------------------------------
+-- FIN DE SCRIPT
+-- --------------------------------------------------------
+SET FOREIGN_KEY_CHECKS=1;
+
+CREATE TABLE mototaxistas_en_linea (
+    id_usuario INT PRIMARY KEY,
+    prioridad INT NOT NULL,
+    en_servicio BOOLEAN DEFAULT FALSE,
+    en_linea BOOLEAN DEFAULT TRUE,
+    ultima_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE recuperacion_password (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    telefono VARCHAR(20) NOT NULL,
+    correo VARCHAR(100) NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expiracion DATETIME NOT NULL
+);

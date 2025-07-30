@@ -1,0 +1,220 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: aqua;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+main {
+    width: 100%;
+    padding: 20px;
+    margin: auto;
+    margin-top: 100px;
+}
+
+.contenedor__todo {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    position: relative;
+}
+
+.caja__trasera {
+    width: 100%;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: center;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    background-color: rgba(0, 128, 255, 0.5);
+}
+
+.caja__trasera div {
+    margin: 100px 40px;
+    color: white;
+    transition: all 500ms;
+}
+
+.caja__trasera div p,
+.caja__trasera button {
+    margin-top: 30px;
+}
+
+.caja__trasera div h3 {
+    font-weight: 400;
+    font-size: 26px;
+}
+
+.caja__trasera div p {
+    font-size: 16px;
+    font-weight: 300;
+}
+
+/* Botones */
+.btn-principal {
+    padding: 10px 40px;
+    border: 2px solid #007BFF; /* Borde azul */
+    font-size: 14px;
+    background: #007BFF; /* Color de fondo azul para que siempre sea visible */
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: all 300ms ease-in-out;
+    color: white; /* Texto blanco para que contraste con el fondo azul */
+    border-radius: 5px;
+    display: inline-block; /* Para asegurarse de que respeta el tamaño del contenido */
+}
+
+.btn-principal:hover {
+    background: white; /* Cambia a blanco al pasar el cursor */
+    color: #007BFF; /* Texto azul en hover */
+    border: 2px solid #007BFF; /* Mantiene el borde azul */
+}
+
+
+.btn-primary {
+    padding: 10px 40px;
+    border: 2px solid #fff;
+    font-size: 14px;
+    background: transparent;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: all 300ms;
+    color: white;
+    border-radius: 5px;
+}
+
+.btn-primary:hover {
+    background: #fff;
+    color: #007BFF;
+    border-color: #007BFF;
+}
+
+/* Estilos generales para los enlaces */
+.recordar,
+.text-decoration-none {
+    font-size: 16px; /* Tamaño del texto */
+    font-weight: 500; /* Un poco de grosor */
+    text-decoration: none; /* Sin subrayado */
+    color: #007BFF; /* Color azul */
+    transition: color 300ms ease-in-out; /* Transición suave */
+}
+
+/* Efecto hover */
+.recordar:hover,
+.text-decoration-none:hover {
+    color: #0056b3; /* Azul más oscuro al pasar el cursor */
+    text-decoration: underline; /* Subrayado en hover */
+}
+
+
+
+
+/* Formularios */
+.contenedor__login, .contenedor__register {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 380px;
+    margin: auto;
+    margin-top: 50px;
+    position: relative;
+    left: 0;
+}
+
+.contenedor__login form, .contenedor__register form {
+    width: 100%;
+    max-width: 400px;
+    padding: 40px 20px;
+    background: white;
+    border-radius: 20px;
+    margin: auto;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.contenedor__login form h2, .contenedor__register form h2 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #46A2FD;
+}
+
+.contenedor__login form input, .contenedor__register form input {
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px;
+    border: none;
+    background: #F2F2F2;
+    font-size: 16px;
+    outline: none;
+}
+
+/* Media Queries para Responsividad */
+@media screen and (max-width: 850px) {
+    main {
+        margin-top: 50px;
+    }
+
+    .caja__trasera {
+        max-width: 350px;
+        height: auto;
+        flex-direction: column;
+        margin: auto;
+    }
+
+    .caja__trasera div {
+        margin: 0;
+        position: static;
+    }
+
+    .contenedor__login, .contenedor__register {
+        top: 0;
+        left: 0;
+        margin: auto;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .contenedor__login, .contenedor__register {
+        max-width: 100%;
+        left: 0;
+        top: 0;
+    }
+
+    .contenedor__login form, .contenedor__register form {
+        padding: 20px;
+    }
+}
+
+/* Estilo para el contenedor de la contraseña */
+.password-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+/* Estilo para el ícono de ojo dentro del contenedor */
+.password-container .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 70%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #aaa;
+}
+
+/* Estilo para el campo de contraseña */
+.password-input {
+    padding-right: 30px;
+}

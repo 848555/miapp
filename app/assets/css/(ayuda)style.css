@@ -1,0 +1,268 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+header h1 {
+    margin: 0;
+    color: #333;
+    font-size: 2.5em;
+}
+
+header p {
+    color: #666;
+    font-size: 1.1em;
+}
+
+nav ul {
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+nav ul li {
+    margin: 10px;
+}
+
+nav ul li a {
+   
+    padding: 10px;
+    border: 2px solid #007BFF; /* Borde azul */
+    font-size: 14px;
+    background: #007BFF; /* Color de fondo azul para que siempre sea visible */
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: all 300ms ease-in-out;
+    color: white; /* Texto blanco para que contraste con el fondo azul */
+    border-radius: 5px;
+    display: inline-block; /* Para asegurarse de que respeta el tamaño del contenido */
+    text-decoration: none;
+}
+
+nav ul li a:hover {
+      background: white; /* Cambia a blanco al pasar el cursor */
+    color: #007BFF; /* Texto azul en hover */
+    border: 2px solid #007BFF; /* Mantiene el borde azul */
+}
+
+main {
+    line-height: 1.6;
+}
+
+main section {
+    margin-bottom: 40px;
+}
+
+main section h2 {
+    font-size: 2em;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+main section h3 {
+    font-size: 1.5em;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+main section p, main section ul {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+main section ul {
+    padding-left: 20px;
+}
+
+main section ul li {
+    margin-bottom: 5px;
+}
+
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        align-items: center; /* Centrar elementos en columnas */
+    }
+    
+    nav ul li {
+        width: 90%;
+        text-align: center;
+    }
+}
+/* Estilos para el botón de subir */
+#scrollToTopBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 50%;
+    font-size: 18px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+#scrollToTopBtn:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+}
+
+#scrollToTopBtn:active {
+    transform: scale(1);
+}
+
+
+
+
+/* Estilos para la accesibilidad de todas las paginas */
+
+
+
+  
+
+  /* Estilos para el ícono de accesibilidad */
+#accessibility-icon {
+    position: fixed;
+    bottom: 80px;
+    left: 20px; /* Cambiado de right a left */
+    background-color: #3a6bb3;
+    padding: 10px;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    z-index: 1000;
+  }
+  
+  #accessibility-icon i {
+    font-size: 24px;
+  }
+  
+  /* Estilos para los controles de accesibilidad */
+  .accessibility-controls {
+    position: fixed;
+    bottom: 80px; /* Ajusta para que el panel esté sobre el ícono */
+    left: 20px; /* Cambiado de right a left */
+    background-color: #0a0a0a;
+    padding: 15px;
+    border-radius: 10px;
+    z-index: 1000;
+  }
+  
+  .accessibility-controls button {
+    display: block;
+    margin-bottom: 20px;
+    background-color: aqua;
+    color: rgb(8, 8, 8);
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  
+  /* Evitar que el texto grande y el contraste afecten al diseño */
+  body.large-text * {
+    font-size: inherit; /* Evitar que afecte las imágenes o el diseño */
+  }
+  
+  body.high-contrast img {
+    filter: none; /* Asegurarse de que las imágenes no se vean afectadas */
+  }
+  
+  /* Contraste alto */
+  body.high-contrast, nav.high-contrast, .barra-lateral.high-contrast {
+    background-color: black;
+    color: black;}
+  
+  .high-contrast .navegacion a, 
+  .high-contrast .usuario {
+    color:  rgb(7, 6, 6);}
+    
+  
+  .high-contrast ion-icon {
+    color:  white;}
+  
+  .high-contrast button {
+    background-color: white;
+    color: black;
+  }
+  
+  
+  
+  /* Otros ajustes para asegurar que el contraste esté bien */
+  .high-contrast .modal-content {
+    background-color: #333;
+    color: white;
+  }
+  
+  /* Estilos generales del modo oscuro */
+  body.modo-oscuro {
+    background-color: #121212; /* Fondo oscuro */
+    color: #e0e0e0; /* Texto claro */
+  }
+  
+  /* Estilo del menú en modo oscuro */
+  body.modo-oscuro .menu,
+  body.modo-oscuro .barra-lateral {
+    background-color: #1e1e1e; /* Fondo oscuro para menú y barra lateral */
+  }
+  
+  /* Estilo de los íconos en modo oscuro */
+  body.modo-oscuro ion-icon {
+    color: #e0e0e0; /* Color claro para íconos */
+  }
+  
+  /* Estilo del panel de accesibilidad */
+  .modo-oscuro .modo-oscuro .switch .circulo {
+    background-color: #fff; /* Color del círculo en modo oscuro */
+  }
+  
+  /* Estilo del panel de accesibilidad */
+  .modo-oscuro .modo-oscuro {
+    background-color: #1e1e1e; /* Fondo oscuro para el panel */
+    color: #e0e0e0; /* Texto claro */
+  }
+  
+  .modo-oscuro .modo-oscuro .info ion-icon {
+    color: #e0e0e0; /* Color del ícono en el panel de accesibilidad */
+  }
+  
+  .modo-oscuro .modo-oscuro .switch .base {
+    background-color: #333; /* Fondo del interruptor en modo oscuro */
+  }
+  
+  .modo-oscuro .modo-oscuro .switch .circulo {
+    background-color: #e0e0e0; /* Color del círculo del interruptor en modo oscuro */
+  }
+  
+  
+  
+  
+  

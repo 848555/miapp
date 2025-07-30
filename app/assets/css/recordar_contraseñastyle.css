@@ -1,0 +1,105 @@
+body {
+    font-family: Arial, sans-serif;
+    background: aqua;
+    margin: 0;
+    padding: 0;
+}
+
+.form-recuperar {
+    width: 100%;
+    max-width: 400px;
+    margin: 80px auto;
+    padding: 30px;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+
+.form-recuperar h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-recuperar input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-recuperar button {
+    padding: 12px 24px;
+    border: 2px solid #007BFF;
+    font-size: 14px;
+    background: #007BFF;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: all 300ms ease-in-out;
+    color: white;
+    border-radius: 5px;
+    text-align: center;
+    width: 100%;
+    text-decoration: none;
+}
+
+.form-recuperar button:hover {
+    background: white;
+    color: #007BFF;
+    border-color: #007BFF;
+}
+
+.mensaje {
+    text-align: center;
+    color: green;
+    margin-top: 10px;
+}
+
+.error {
+    color: red;
+}
+
+.button {
+    display: inline-block;
+    padding: 12px 24px;
+    border: 2px solid #007BFF;
+    font-size: 14px;
+    background: #007BFF;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: all 300ms ease-in-out;
+    color: white;
+    border-radius: 5px;
+    text-align: center;
+    width: 100%;
+    text-decoration: none;
+    box-sizing: border-box;
+    margin-top: 20px
+}
+
+.button:hover {
+    background: white;
+    color: #007BFF;
+    border-color: #007BFF;
+}
+
+
+/* ✅ MEDIA QUERY para pantallas menores a 600px */
+@media screen and (max-width: 600px) {
+    .form-recuperar {
+        width: 80%;
+        padding: 20px;
+    }
+
+    .form-recuperar h2 {
+        font-size: 20px;
+    }
+
+    .form-recuperar input,
+    .form-recuperar button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}

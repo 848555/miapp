@@ -1,0 +1,465 @@
+/* Estilos generales */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: aqua;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+h2 {
+  text-align: center;
+  font-size: 30px;
+  padding: 30px 0;
+}
+
+
+
+.contenedor {
+  width: 90%;
+  max-width: 400px; /* Ajusta este valor según tus necesidades */
+  margin: 0 auto; /* Centra el contenedor horizontalmente */
+  background: rgb(247, 248, 250);
+  border-radius: 30px;
+  padding: 20px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.contenedor p {
+  color: #0a0a0a; /* Opcional: color dorado para resaltar las etiquetas */
+}
+
+.contenedor strong {
+  color: #0a0a0a; /* Opcional: color dorado para resaltar las etiquetas */
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  color: blue;
+  font-size: 16px;
+  text-align: left; /* Alinea el texto del label a la izquierda */
+}
+
+input,
+select,
+button,
+a {
+  width: calc(100% - 40px);
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+  
+}
+
+select {
+  width: 100%;
+}
+
+button,
+a {
+  padding: 10px 40px;
+    border: 2px solid #007BFF; /* Borde azul */
+    font-size: 14px;
+    background: #007BFF; /* Color de fondo azul para que siempre sea visible */
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: all 300ms ease-in-out;
+    color: white; /* Texto blanco para que contraste con el fondo azul */
+    border-radius: 5px;
+    display: inline-block; /* Para asegurarse de que respeta el tamaño del contenido */
+    text-decoration: none;
+}
+
+button:hover,
+a:hover {
+  background: white; /* Cambia a blanco al pasar el cursor */
+    color: #007BFF; /* Texto azul en hover */
+    border: 2px solid #007BFF; /* Mantiene el borde azul */
+}
+
+/* Estilos para los mensajes de error y éxito */
+.error-message {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.success-message {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  .contenedor {
+      width: 90%;
+      max-width: 100%;
+  }
+}
+/* Estilos para la accesibilidad de todas las paginas */
+
+/* Estilos para el menú horizontal */
+.menu-horizontal {
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+}
+
+.menu-horizontal > li > a {
+  display: block;
+  padding: 15px 20px;
+  color: black;
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Estilos para el botón del menú */
+.menu {
+  position: fixed;
+  width: 80px;
+  height: 80px;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: var(--color-boton);
+  color: var(--color-boton-texto);
+  right: 20px;
+  top: 20px;
+  z-index: 100;
+}
+
+.menu icon-icon:nth-child(2) {
+  display: none;
+}
+
+/* Estilos para la barra lateral */
+.barra-lateral {
+  position: fixed;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 250px;
+  height: 100%;
+  overflow: hidden;
+  padding: 20px 15px;
+  background-color: var(--color-barra-lateral);
+  transition: width 0.5s ease, background-color 0.3s ease, left 0.5s ease;
+  z-index: 50;
+  -webkit-transition: width 0.5s ease, background-color 0.3s ease, left 0.5s ease;
+  -moz-transition: width 0.5s ease, background-color 0.3s ease, left 0.5s ease;
+  -ms-transition: width 0.5s ease, background-color 0.3s ease, left 0.5s ease;
+  -o-transition: width 0.5s ease, background-color 0.3s ease, left 0.5s ease;
+}
+
+.mini-barra-lateral {
+  width: 80px;
+}
+
+.barra-lateral span {
+  width: 100px;
+  white-space: nowrap;
+  font-size: 18px;
+  text-align: left;
+  opacity: 1;
+  transition: opacity 0.5s ease, width 0.5s ease;
+}
+
+.barra-lateral span.oculto {
+  opacity: 0;
+  width: 0;
+}
+
+/* Estilos para la navegación dentro de la barra lateral */
+.barra-lateral .navegacion {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.barra-lateral .navegacion::-webkit-scrollbar {
+  width: 5px;
+}
+
+.barra-lateral .navegacion::-webkit-scrollbar-thumb {
+  background-color: var(--color-scroll);
+  border-radius: 5px;
+}
+
+.barra-lateral .navegacion::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-scroll-hover);
+}
+
+.barra-lateral .navegacion li {
+  list-style: none;
+  display: flex;
+  margin-bottom: 5px;
+}
+
+.barra-lateral .navegacion a {
+  width: 100%;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  border-radius: 10px;
+  color: var(--color-texto-menu);
+}
+
+.barra-lateral .navegacion a:hover {
+  background-color: var(--color-menu-hover);
+  color: var(--color-menu-hover-texto);
+}
+
+.barra-lateral .navegacion ion-icon {
+  min-width: 50px;
+  font-size: 20px;
+}
+
+/* Estilos para la línea divisoria en la barra lateral */
+.barra-lateral .linea {
+  width: 100%;
+  height: 1px;
+  margin-top: 15px;
+  background-color: var(--color-linea);
+}
+
+/* Estilos para el modo oscuro en la barra lateral */
+.barra-lateral .modo-oscuro {
+  width: 100%;
+  margin-bottom: 80px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.barra-lateral .modo-oscuro .info {
+  width: 150px;
+  height: 45px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  color: var(--color-texto-menu);
+}
+
+.barra-lateral .modo-oscuro ion-icon {
+  width: 50px;
+  font-size: 20px;
+}
+
+/* Estilos para el switch en la barra lateral */
+.barra-lateral .modo-oscuro .switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 50px;
+  height: 45px;
+  cursor: pointer;
+}
+
+.barra-lateral .modo-oscuro .base {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 35px;
+  height: 20px;
+  background-color: var(--color-switch-base);
+  border-radius: 50px;
+}
+
+.barra-lateral .modo-oscuro .circulo {
+  position: absolute;
+  width: 18px;
+  height: 90%;
+  background-color: var(--color-switch-circulo);
+  border-radius: 50%;
+  left: 2px;
+  transition: left 0.5s ease;
+}
+
+/* Estilos para la sección de usuario en la barra lateral */
+.barra-lateral .usuario {
+  width: 100%;
+  display: flex;
+}
+
+.barra-lateral .usuario img {
+  width: 50px;
+  min-width: 50px;
+  border-radius: 10px;
+}
+
+.barra-lateral .usuario .info-usuario {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--color-texto);
+  overflow: hidden;
+}
+
+.barra-lateral .usuario .nombre {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-left: 5px;
+}
+
+.barra-lateral .usuario .nombre {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.barra-lateral .usuario .email {
+  font-size: 13px;
+}
+
+.barra-lateral .usuario ion-icon {
+  font-size: 20px;
+}
+
+#inbox {
+  background-color: var(--color-menu-hover);
+  color: var(--color-menu-hover-texto);
+}
+
+main {
+  margin-left: 250px;
+  padding: 20px;
+  transition: margin-left 0.5s ease;
+}
+
+main.min-main {
+  margin-left: 80px;
+}
+
+
+/* Estilos para el ícono de accesibilidad */
+#accessibility-icon {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background-color: #3a6bb3;
+  padding: 10px;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+#accessibility-icon i {
+  font-size: 24px;
+}
+
+/* Estilos para los controles de accesibilidad */
+.accessibility-controls {
+  position: fixed;
+  bottom: 80px; /* Ajusta para que el panel esté sobre el ícono */
+  right: 20px;
+  background-color: #0a0a0a;
+  padding: 15px;
+  border-radius: 10px;
+  z-index: 1000;
+}
+
+.accessibility-controls button {
+  display: block;
+  margin-bottom: 20px;
+  background-color: aqua;
+  color: rgb(8, 8, 8);
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Evitar que el texto grande y el contraste afecten al diseño */
+body.large-text * {
+  font-size: inherit; /* Evitar que afecte las imágenes o el diseño */
+}
+
+body.high-contrast img {
+  filter: none; /* Asegurarse de que las imágenes no se vean afectadas */
+}
+
+/* Contraste alto */
+body.high-contrast, nav.high-contrast, .barra-lateral.high-contrast {
+  background-color: black;
+  color: black;}
+
+.high-contrast .navegacion a, 
+.high-contrast .usuario {
+  color:  rgb(7, 6, 6);}
+  
+
+.high-contrast ion-icon {
+  color:  white;}
+
+.high-contrast button {
+  background-color: white;
+  color: black;
+}
+
+
+
+/* Otros ajustes para asegurar que el contraste esté bien */
+.high-contrast .modal-content {
+  background-color: #333;
+  color: white;
+}
+
+/* Estilos generales del modo oscuro */
+body.modo-oscuro {
+  background-color: #121212; /* Fondo oscuro */
+  color: #e0e0e0; /* Texto claro */
+}
+
+/* Estilo del menú en modo oscuro */
+body.modo-oscuro .menu,
+body.modo-oscuro .barra-lateral {
+  background-color: #1e1e1e; /* Fondo oscuro para menú y barra lateral */
+}
+
+/* Estilo de los íconos en modo oscuro */
+body.modo-oscuro ion-icon {
+  color: #e0e0e0; /* Color claro para íconos */
+}
+
+/* Estilo del panel de accesibilidad */
+.modo-oscuro .modo-oscuro .switch .circulo {
+  background-color: #fff; /* Color del círculo en modo oscuro */
+}
+
+/* Estilo del panel de accesibilidad */
+.modo-oscuro .modo-oscuro {
+  background-color: #1e1e1e; /* Fondo oscuro para el panel */
+  color: #e0e0e0; /* Texto claro */
+}
+
+.modo-oscuro .modo-oscuro .info ion-icon {
+  color: #e0e0e0; /* Color del ícono en el panel de accesibilidad */
+}
+
+.modo-oscuro .modo-oscuro .switch .base {
+  background-color: #333; /* Fondo del interruptor en modo oscuro */
+}
+
+.modo-oscuro .modo-oscuro .switch .circulo {
+  background-color: #e0e0e0; /* Color del círculo del interruptor en modo oscuro */
+}
+
+
+
