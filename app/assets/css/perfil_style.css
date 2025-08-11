@@ -565,12 +565,6 @@ h2 {
   transform: scale(1.15);
 }
 
-/* === Auto modo oscuro basado en preferencia del sistema (complementario a tu .modo-oscuro manual) === */
-@media (prefers-color-scheme: dark) {
-  body:not(.modo-oscuro) {
-    background-color: #121212;
-    color: #e0e0e0;
-  }
 
   .container {
     background-color: #1e1e1e;
