@@ -745,10 +745,10 @@ body.modo-oscuro ion-icon {
     border-radius: 50px;
     transition: background-color 0.3s ease;
 }
-
 .base.activo {
-    background-color: #4caf50; /* encendido */
+    background-color: #4caf50 !important;
 }
+
 
 .circulo {
     width: 20px;
