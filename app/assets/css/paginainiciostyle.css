@@ -426,21 +426,6 @@ main.min-main{
   -ms-border-radius: 1px;
   -o-border-radius: 1px;
 }
-/* estilos para el boton modo oscuro */
-.circulo {
-    width: 20px;
-    height: 20px;
-    background-color: white;
-    border-radius: 50%;
-    position: absolute;
-    top: 2.5px;
-    left: 2.5px;
-    transition: transform 0.3s ease;
-}
-
-.circulo.activo {
-    transform: translateX(25px); /* mueve el círculo a la derecha */
-}
 
 
 /* Estilos para el modal */
@@ -744,6 +729,35 @@ body.modo-oscuro ion-icon {
 }
 
 
+/* estilo boton de modo oscuro */
+.switch {
+    width: 50px;
+    height: 25px;
+    background-color: #ccc; /* apagado */
+    border-radius: 25px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.switch.activo {
+    background-color: #4caf50; /* encendido */
+}
+
+.circulo {
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2.5px;
+    left: 2.5px;
+    transition: transform 0.3s ease;
+}
+
+.circulo.activo {
+    transform: translateX(25px);
+}
 
 
 
