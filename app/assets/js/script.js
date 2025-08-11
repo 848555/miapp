@@ -18,27 +18,32 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // === Modo oscuro ===
-    const modoOscuroSwitch = document.querySelector('.modo-oscuro .switch');
-    const body = document.body;
+ // === Modo oscuro ===
+const modoOscuroSwitch = document.querySelector('.modo-oscuro .switch');
+const circuloSwitch = document.querySelector('.modo-oscuro .circulo'); // círculo del switch
+const body = document.body;
 
-    // Aplicar modo oscuro siempre si está activado en localStorage
-    if (localStorage.getItem('modoOscuro') === 'enabled') {
-        body.classList.add('modo-oscuro');
-    }
+// Aplicar modo oscuro siempre si está activado en localStorage
+if (localStorage.getItem('modoOscuro') === 'enabled') {
+    body.classList.add('modo-oscuro');
+    if (circuloSwitch) circuloSwitch.classList.add('activo'); // mover círculo si está activado
+}
 
-    // Solo si el botón existe, permitir alternar el modo
-    if (modoOscuroSwitch) {
-        modoOscuroSwitch.addEventListener('click', function () {
-            if (body.classList.contains('modo-oscuro')) {
-                body.classList.remove('modo-oscuro');
-                localStorage.setItem('modoOscuro', 'disabled');
-            } else {
-                body.classList.add('modo-oscuro');
-                localStorage.setItem('modoOscuro', 'enabled');
-            }
-        });
-    }
+// Solo si el botón existe, permitir alternar el modo
+if (modoOscuroSwitch) {
+    modoOscuroSwitch.addEventListener('click', function () {
+        if (body.classList.contains('modo-oscuro')) {
+            body.classList.remove('modo-oscuro');
+            localStorage.setItem('modoOscuro', 'disabled');
+            if (circuloSwitch) circuloSwitch.classList.remove('activo'); // mover círculo a la izquierda
+        } else {
+            body.classList.add('modo-oscuro');
+            localStorage.setItem('modoOscuro', 'enabled');
+            if (circuloSwitch) circuloSwitch.classList.add('activo'); // mover círculo a la derecha
+        }
+    });
+}
+
 
     // === Accesibilidad ===
     const accessibilityIcon = document.getElementById('accessibility-icon');
