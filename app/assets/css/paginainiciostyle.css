@@ -731,16 +731,19 @@ body.modo-oscuro ion-icon {
 
 /* estilo boton de modo oscuro */
 .switch {
+    cursor: pointer;
+}
+
+.base {
     width: 50px;
     height: 25px;
     background-color: #ccc; /* apagado */
     border-radius: 25px;
     position: relative;
-    cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.switch.activo {
+.base.activo {
     background-color: #4caf50; /* encendido */
 }
 
@@ -752,12 +755,13 @@ body.modo-oscuro ion-icon {
     position: absolute;
     top: 2.5px;
     left: 2.5px;
-    transition: transform 0.3s ease;
+    transition: left 0.3s ease;
 }
 
 .circulo.activo {
-    transform: translateX(25px);
+    left: 27px; /* en vez de translateX para mejor control */
 }
+
 
 
 
