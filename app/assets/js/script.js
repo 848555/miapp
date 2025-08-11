@@ -19,34 +19,32 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
  // === Modo oscuro ===
-// === Modo oscuro ===
-const modoOscuroSwitch = document.querySelector('.modo-oscuro .switch');
+const modoOscuroBase = document.querySelector('.modo-oscuro .base');
 const circuloSwitch = document.querySelector('.modo-oscuro .circulo');
 const body = document.body;
 
-// Aplicar modo oscuro siempre si está activado en localStorage
 if (localStorage.getItem('modoOscuro') === 'enabled') {
     body.classList.add('modo-oscuro');
-    if (modoOscuroSwitch) modoOscuroSwitch.classList.add('activo'); // fondo verde
-    if (circuloSwitch) circuloSwitch.classList.add('activo'); // círculo a la derecha
+    modoOscuroBase.classList.add('activo');
+    circuloSwitch.classList.add('activo');
 }
 
-// Solo si el botón existe, permitir alternar el modo
-if (modoOscuroSwitch) {
-    modoOscuroSwitch.addEventListener('click', function () {
+if (modoOscuroBase) {
+    modoOscuroBase.addEventListener('click', function () {
         if (body.classList.contains('modo-oscuro')) {
             body.classList.remove('modo-oscuro');
             localStorage.setItem('modoOscuro', 'disabled');
-            if (modoOscuroSwitch) modoOscuroSwitch.classList.remove('activo'); // fondo gris
-            if (circuloSwitch) circuloSwitch.classList.remove('activo'); // círculo a la izquierda
+            modoOscuroBase.classList.remove('activo');
+            circuloSwitch.classList.remove('activo');
         } else {
             body.classList.add('modo-oscuro');
             localStorage.setItem('modoOscuro', 'enabled');
-            if (modoOscuroSwitch) modoOscuroSwitch.classList.add('activo'); // fondo verde
-            if (circuloSwitch) circuloSwitch.classList.add('activo'); // círculo a la derecha
+            modoOscuroBase.classList.add('activo');
+            circuloSwitch.classList.add('activo');
         }
     });
 }
+
 
     // === Accesibilidad ===
     const accessibilityIcon = document.getElementById('accessibility-icon');
