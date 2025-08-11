@@ -19,31 +19,35 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
  // === Modo oscuro ===
-const modoOscuroBase = document.querySelector('.modo-oscuro .base');
+const modoOscuroSwitch = document.querySelector('.modo-oscuro .switch');
+const baseSwitch = document.querySelector('.modo-oscuro .base');
 const circuloSwitch = document.querySelector('.modo-oscuro .circulo');
 const body = document.body;
 
+// Aplicar estado guardado
 if (localStorage.getItem('modoOscuro') === 'enabled') {
     body.classList.add('modo-oscuro');
-    modoOscuroBase.classList.add('activo');
+    baseSwitch.classList.add('activo');
     circuloSwitch.classList.add('activo');
 }
 
-if (modoOscuroBase) {
-    modoOscuroBase.addEventListener('click', function () {
+// Manejar click en todo el switch
+if (modoOscuroSwitch) {
+    modoOscuroSwitch.addEventListener('click', function () {
         if (body.classList.contains('modo-oscuro')) {
             body.classList.remove('modo-oscuro');
             localStorage.setItem('modoOscuro', 'disabled');
-            modoOscuroBase.classList.remove('activo');
+            baseSwitch.classList.remove('activo');
             circuloSwitch.classList.remove('activo');
         } else {
             body.classList.add('modo-oscuro');
             localStorage.setItem('modoOscuro', 'enabled');
-            modoOscuroBase.classList.add('activo');
+            baseSwitch.classList.add('activo');
             circuloSwitch.classList.add('activo');
         }
     });
 }
+
 
 
     // === Accesibilidad ===
