@@ -3,19 +3,16 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Iniciar sesión si no está activa
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 include(__DIR__ . '../../../config/conexion.php');
 
-// 🚨 CONFIGURACIÓN SUPABASE
 define('SUPABASE_URL', 'https://ccfwmhwwjbzhsdtqusrw.supabase.co');
-define('SUPABASE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZndtaHd3amJ6aHNkdHF1c3J3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mzg4ODExNiwiZXhwIjoyMDY5NDY0MTE2fQ.VL_ha2fmlgATu_ZRfknmXh_TkyDMhkWne4XojZ8qFWw');
+define('SUPABASE_KEY', 'TU_SUPABASE_SERVICE_ROLE_KEY_AQUI'); // Cambia por tu key real
 define('SUPABASE_BUCKET', 'documentos');
 
-// Función para subir archivo a Supabase con upsert
 function subirASupabase($fileTmp, $fileName) {
     $url = SUPABASE_URL . "/storage/v1/object/" . SUPABASE_BUCKET . "/" . $fileName;
     $fileData = file_get_contents($fileTmp);
@@ -28,42 +25,42 @@ function subirASupabase($fileTmp, $fileName) {
         CURLOPT_HTTPHEADER => [
             'Authorization: Bearer ' . SUPABASE_KEY,
             'Content-Type: application/octet-stream',
-            'x-upsert: true'  // importante para actualizar si ya existe
+            'x-upsert: true'
         ],
     ]);
     $response = curl_exec($ch);
     $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    if ($status < 200 || $status >= 300) {
-        throw new Exception("Error subiendo archivo a Supabase ($status): $response");
+    if ($status >= 200 && $status < 300) {
+        return "$fileName";
+    } else {
+        return false;
     }
-
-    return $fileName;
 }
 
-// Recoger y escapar datos del formulario para evitar SQL Injection
 $placa  = $conexion->real_escape_string($_POST["placa"] ?? "");
 $marca  = $conexion->real_escape_string($_POST["marca"] ?? "");
 $modelo = $conexion->real_escape_string($_POST["modelo"] ?? "");
 $color  = $conexion->real_escape_string($_POST["color"] ?? "");
 
-// Obtener id del usuario y validar
 $id_usuarios = $_SESSION['id_usuario'] ?? "";
 if (empty($id_usuarios)) {
     die('Error: el id_usuarios no está definido.');
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // IMPORTANTE: Poner comillas en id_usuarios si es string en BD
+
+    // Verificar si el usuario ya tiene documentos (para update o error)
     $sql_check = "SELECT * FROM documentos WHERE id_usuarios = '$id_usuarios' LIMIT 1";
     $result = $conexion->query($sql_check);
 
     if ($result && $result->num_rows > 0) {
+        // Registro existente - hacemos update
         $row = $result->fetch_assoc();
         $last_id = (int)$row['id_documentos'];
 
-        // Guardar rutas actuales para mantenerlas si no suben nuevos archivos
+        // Rutas actuales para mantener si no suben archivo nuevo
         $rutas_actuales = [
             'licencia_de_conducir' => $row['licencia_de_conducir'],
             'tarjeta_de_propiedad' => $row['tarjeta_de_propiedad'],
@@ -72,10 +69,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
 
     } else {
-        die("No existe registro para actualizar. Primero debes subir tus documentos.");
+        // No existe, insertamos nuevo registro sin rutas
+        $sql_insert = "INSERT INTO documentos (placa, marca, modelo, color, id_usuarios, documento_verificado) 
+                       VALUES ('$placa', '$marca', '$modelo', '$color', '$id_usuarios', 0)";
+        if (!$conexion->query($sql_insert)) {
+            die("Error al insertar documentos: " . $conexion->error);
+        }
+        $last_id = $conexion->insert_id;
+
+        // Inicializamos rutas vacías para el insert nuevo
+        $rutas_actuales = [
+            'licencia_de_conducir' => "",
+            'tarjeta_de_propiedad' => "",
+            'soat' => "",
+            'tecno_mecanica' => ""
+        ];
     }
 
-    // Validar archivos
     $allowed_types = ['jpg', 'jpeg', 'png'];
     $files = [
         "licencia_de_conducir" => $_FILES["licencia_de_conducir"] ?? null,
@@ -99,21 +109,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $final_name = $last_id . "_" . $key . "." . $ext;
 
-            try {
-                $ruta = subirASupabase($file["tmp_name"], $final_name);
-                $img_paths[$key] = $final_name;
-            } catch (Exception $e) {
-                $_SESSION['error_message'] = "Error al subir $key: " . $e->getMessage();
+            $ruta = subirASupabase($file["tmp_name"], $final_name);
+            if ($ruta === false) {
+                $_SESSION['error_message'] = "Error al subir $key a Supabase.";
                 break;
             }
+            $img_paths[$key] = $final_name;
         } else {
-            // Mantener la ruta actual si no hay nuevo archivo
+            // Mantener ruta anterior si no suben nuevo archivo
             $img_paths[$key] = $rutas_actuales[$key] ?? "";
         }
     }
 
-    // Actualizar la base de datos solo si no hubo errores
     if (!isset($_SESSION['error_message'])) {
+        // Actualizar tabla documentos con datos y rutas
         $sql_update = "UPDATE documentos SET 
                         placa = '$placa', 
                         marca = '$marca', 
@@ -122,11 +131,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         licencia_de_conducir = '{$img_paths['licencia_de_conducir']}', 
                         tarjeta_de_propiedad = '{$img_paths['tarjeta_de_propiedad']}', 
                         soat = '{$img_paths['soat']}', 
-                        tecno_mecanica = '{$img_paths['tecno_mecanica']}' 
+                        tecno_mecanica = '{$img_paths['tecno_mecanica']}'
                        WHERE id_documentos = $last_id";
 
         if ($conexion->query($sql_update) === TRUE) {
-            $_SESSION['mensaje'] = "Documentos actualizados correctamente.";
+            $_SESSION['mensaje'] = ($result->num_rows > 0) ? "Documentos actualizados correctamente." : "Documentos subidos correctamente.";
             header("Location: ../pages/inicio.php");
             exit();
         } else {
