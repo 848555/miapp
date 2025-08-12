@@ -51,17 +51,7 @@ $documentos_moto = obtenerDatos($conexion, $id_usuario);
       <form  method="POST" action="/app/include/editar_docu.php" enctype="multipart/form-data">
         <!-- Campos de texto para datos básicos -->
 
-          <?php
-session_start();
-if (isset($_SESSION['success_message'])) {
-    echo "<div class='alert alert-success'>" . $_SESSION['success_message'] . "</div>";
-    unset($_SESSION['success_message']);
-}
-if (isset($_SESSION['error_message'])) {
-    echo "<div class='alert alert-danger'>" . $_SESSION['error_message'] . "</div>";
-    unset($_SESSION['error_message']);
-}
-?>
+         
 
         <label for="placa"><strong>Placa:</strong></label>
         <input type="text" id="placa" name="placa" value="<?php echo htmlspecialchars($documentos_moto['placa']); ?>" required>
