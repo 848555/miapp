@@ -61,7 +61,9 @@ foreach ($files as $key => $file) {
 }
 
 // Insertar datos sin imágenes aún
-$sql = "INSERT INTO documentos (placa, marca, modelo, color, id_usuarios) VALUES ('$placa', '$marca', '$modelo', '$color', '$id_usuarios')";
+$sql = "INSERT INTO documentos (placa, marca, modelo, color, id_usuarios, documento_verificado) 
+        VALUES ('$placa', '$marca', '$modelo', '$color', '$id_usuarios', 0)";
+
 if (!$conexion->query($sql)) {
     die("Error al insertar documentos: " . $conexion->error);
 }
