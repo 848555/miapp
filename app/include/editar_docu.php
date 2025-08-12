@@ -62,21 +62,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result && $result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $last_id = $row['id_documentos'];
+
+        // Guardar rutas actuales para mantenerlas si no se suben archivos nuevos
+        $rutas_actuales = [
+            'licencia_de_conducir' => $row['licencia_de_conducir'],
+            'tarjeta_de_propiedad' => $row['tarjeta_de_propiedad'],
+            'soat' => $row['soat'],
+            'tecno_mecanica' => $row['tecno_mecanica']
+        ];
+
     } else {
-        // Insertar nuevo
-        $sql = "INSERT INTO documentos (placa, marca, modelo, color, id_usuarios) 
-                VALUES ('$placa', '$marca', '$modelo', '$color', '$id_usuarios')";
-        if ($conexion->query($sql) === TRUE) {
-            $last_id = $conexion->insert_id;
-            $row = [
-                'licencia_de_conducir' => "",
-                'tarjeta_de_propiedad' => "",
-                'soat' => "",
-                'tecno_mecanica' => ""
-            ];
-        } else {
-            die("Error: " . $conexion->error);
-        }
+        die("No existe registro para actualizar. Primero debes subir tus documentos.");
     }
     
     // Tipos permitidos
@@ -97,7 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ext = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
             if (!in_array($ext, $allowed_types)) {
                 $_SESSION['error_message'] = "El archivo $key no es un tipo permitido.";
-                // Puedes decidir si continuar o abortar aquí
                 break;
             }
             if (getimagesize($file["tmp_name"]) === false) {
@@ -114,8 +109,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
             }
         } else {
-            // Mantener nombre actual en BD si no hay nuevo archivo
-            $img_paths[$key] = $row[$key] ?? "";
+            // Mantener ruta actual si no hay nuevo archivo
+            $img_paths[$key] = $rutas_actuales[$key] ?? "";
         }
     }
 
@@ -135,8 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($conexion->query($sql_update) === TRUE) {
             $_SESSION['success_message'] = "Documentos actualizados correctamente.";
             header("Location: ../pages/inicio.php");
-exit();
-
+            exit();
         } else {
             $_SESSION['error_message'] = "Error al actualizar en BD: " . $conexion->error;
         }
