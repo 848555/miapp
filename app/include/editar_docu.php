@@ -134,6 +134,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if ($conexion->query($sql_update) === TRUE) {
             $_SESSION['success_message'] = "Documentos actualizados correctamente.";
+            header("Location: ../pages/inicio.php");
+exit();
+
         } else {
             $_SESSION['error_message'] = "Error al actualizar en BD: " . $conexion->error;
         }
