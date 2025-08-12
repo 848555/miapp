@@ -144,8 +144,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($conexion->query($sql_update) === TRUE) {
         $_SESSION['success_message'] = "Documentos actualizados correctamente.";
-        header("Location: ../pages/sermototaxista.php");
-        exit();
     } else {
         die("Error: " . $conexion->error);
     }
