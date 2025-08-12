@@ -9,9 +9,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 🔑 Configuración Supabase
-define('SUPABASE_URL', 'https://ccfwmhwwjbzhsdtqusrw.supabase.co');
-define('SUPABASE_KEY', 'TU_SERVICE_ROLE_API_KEY'); // Clave con rol service_role
+
+// 🚨 CONFIGURACIÓN SUPABASE
+define('SUPABASE_URL', 'https://ccfwmhwwjbzhsdtqusrw.supabase.co'); 
+define('SUPABASE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZndtaHd3amJ6aHNkdHF1c3J3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mzg4ODExNiwiZXhwIjoyMDY5NDY0MTE2fQ.VL_ha2fmlgATu_ZRfknmXh_TkyDMhkWne4XojZ8qFWw'); // Service role key
 define('SUPABASE_BUCKET', 'documentos');
 
 // Función para eliminar archivos de Supabase
