@@ -22,7 +22,7 @@ $sql_check = "SELECT id_documentos FROM documentos WHERE id_usuarios = '$id_usua
 $result_check = $conexion->query($sql_check);
 
 if ($result_check->num_rows > 0) {
-    $_SESSION['warning_message'] = "Ya has subido tus documentos previamente.";
+    $_SESSION['error-message'] = "Ya has subido tus documentos previamente.";
     header("Location: ../pages/sermototaxista.php");
     exit();
 }
@@ -47,14 +47,14 @@ $files = [
 $allowed_types = ['jpg', 'jpeg', 'png'];
 foreach ($files as $key => $file) {
     if ($file["error"] !== UPLOAD_ERR_OK) {
-        $_SESSION['error_archivo'] = "Error al subir el archivo " . $file["name"];
+        $_SESSION['error-message'] = "Error al subir el archivo " . $file["name"];
         header('Location: ../pages/registro_de_documentos.php');
         exit();
     }
 
     $ext = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
     if (!in_array($ext, $allowed_types)) {
-        $_SESSION['error_archivo'] = "Archivo no permitido: " . $file["name"];
+        $_SESSION['error-message'] = "Archivo no permitido: " . $file["name"];
         header('Location: ../pages/registro_de_documentos.php');
         exit();
     }
@@ -122,7 +122,7 @@ $sql_update = "UPDATE documentos SET
     WHERE id_documentos=$last_id";
 
 if ($conexion->query($sql_update)) {
-    $_SESSION['success_message'] = "Documentos subidos correctamente.";
+    $_SESSION['mensaje'] = "Documentos subidos correctamente.";
     header("Location: ../pages/sermototaxista.php");
     exit();
 } else {
