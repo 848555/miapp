@@ -42,28 +42,28 @@ function subirASupabase($fileTmp, $fileName) {
     return $fileName;
 }
 
-// Recoger datos del formulario
-$placa  = $_POST["placa"] ?? "";
-$marca  = $_POST["marca"] ?? "";
-$modelo = $_POST["modelo"] ?? "";
-$color  = $_POST["color"] ?? "";
+// Recoger y escapar datos del formulario para evitar SQL Injection
+$placa  = $conexion->real_escape_string($_POST["placa"] ?? "");
+$marca  = $conexion->real_escape_string($_POST["marca"] ?? "");
+$modelo = $conexion->real_escape_string($_POST["modelo"] ?? "");
+$color  = $conexion->real_escape_string($_POST["color"] ?? "");
 
-// Obtener id del usuario
+// Obtener id del usuario y validar
 $id_usuarios = $_SESSION['id_usuario'] ?? "";
 if (empty($id_usuarios)) {
     die('Error: el id_usuarios no está definido.');
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Verificar si ya existe registro
-    $sql_check = "SELECT * FROM documentos WHERE id_usuarios = $id_usuarios LIMIT 1";
+    // IMPORTANTE: Poner comillas en id_usuarios si es string en BD
+    $sql_check = "SELECT * FROM documentos WHERE id_usuarios = '$id_usuarios' LIMIT 1";
     $result = $conexion->query($sql_check);
-    
+
     if ($result && $result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $last_id = $row['id_documentos'];
+        $last_id = (int)$row['id_documentos'];
 
-        // Guardar rutas actuales para mantenerlas si no se suben archivos nuevos
+        // Guardar rutas actuales para mantenerlas si no suben nuevos archivos
         $rutas_actuales = [
             'licencia_de_conducir' => $row['licencia_de_conducir'],
             'tarjeta_de_propiedad' => $row['tarjeta_de_propiedad'],
@@ -74,11 +74,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         die("No existe registro para actualizar. Primero debes subir tus documentos.");
     }
-    
-    // Tipos permitidos
-    $allowed_types = ['jpg', 'jpeg', 'png'];
 
-    // Archivos recibidos
+    // Validar archivos
+    $allowed_types = ['jpg', 'jpeg', 'png'];
     $files = [
         "licencia_de_conducir" => $_FILES["licencia_de_conducir"] ?? null,
         "tarjeta_de_propiedad" => $_FILES["tarjeta_de_propiedad"] ?? null,
@@ -109,12 +107,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
             }
         } else {
-            // Mantener ruta actual si no hay nuevo archivo
+            // Mantener la ruta actual si no hay nuevo archivo
             $img_paths[$key] = $rutas_actuales[$key] ?? "";
         }
     }
 
-    // Actualizar base de datos solo si no hay error
+    // Actualizar la base de datos solo si no hubo errores
     if (!isset($_SESSION['error_message'])) {
         $sql_update = "UPDATE documentos SET 
                         placa = '$placa', 
@@ -126,9 +124,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         soat = '{$img_paths['soat']}', 
                         tecno_mecanica = '{$img_paths['tecno_mecanica']}' 
                        WHERE id_documentos = $last_id";
-        
+
         if ($conexion->query($sql_update) === TRUE) {
-            $_SESSION['success_message'] = "Documentos actualizados correctamente.";
+            $_SESSION['mensaje'] = "Documentos actualizados correctamente.";
             header("Location: ../pages/inicio.php");
             exit();
         } else {
