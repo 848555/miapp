@@ -15,6 +15,10 @@ function extraerPathInterno($urlPublica) {
     $prefix = SUPABASE_URL . "/storage/v1/object/public/" . SUPABASE_STORAGE_BUCKET . "/";
     return str_replace($prefix, '', strtok($urlPublica, '?')); // quita query params
 }
+echo '<pre>';
+print_r($_FILES);
+echo '</pre>';
+exit();
 
 function eliminarArchivoSupabase($urlPublica) {
     $pathInterno = extraerPathInterno($urlPublica);
@@ -49,11 +53,18 @@ function subirArchivoASupabase($fileTmpPath, $fileName) {
             "Content-Type: application/octet-stream"
         ],
     ]);
-    curl_exec($curl);
+    $response = curl_exec($curl);
     $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     curl_close($curl);
-    return ($http_code >= 200 && $http_code < 300);
+
+    if ($http_code >= 200 && $http_code < 300) {
+        return true;
+    } else {
+        echo "Error en Supabase upload ($http_code): $response";
+        return false;
+    }
 }
+
 
 function obtenerUrlPublica($fileName) {
     return SUPABASE_URL . "/storage/v1/object/public/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName . "?v=" . time();
