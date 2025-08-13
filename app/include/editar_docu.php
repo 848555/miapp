@@ -12,7 +12,7 @@ define('SUPABASE_URL', 'https://ccfwmhwwjbzhsdtqusrw.supabase.co');
 define('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZndtaHd3amJ6aHNkdHF1c3J3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mzg4ODExNiwiZXhwIjoyMDY5NDY0MTE2fQ.VL_ha2fmlgATu_ZRfknmXh_TkyDMhkWne4XojZ8qFWw');
 define('SUPABASE_STORAGE_BUCKET', 'documentos');
 
-// Función para subir archivo a Supabase Storage con upsert
+// Función para subir archivo a Supabase Storage
 function subirArchivoASupabase($fileTmpPath, $fileName) {
     $url = SUPABASE_URL . "/storage/v1/object/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName . "?upsert=true";
 
@@ -41,14 +41,41 @@ function subirArchivoASupabase($fileTmpPath, $fileName) {
     return ($http_code >= 200 && $http_code < 300);
 }
 
-// Construir URL pública para archivos
+// Función para eliminar archivo en Supabase
+function eliminarArchivoSupabase($fileName) {
+    $url = SUPABASE_URL . "/storage/v1/object/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName;
+
+    $curl = curl_init();
+    curl_setopt_array($curl, [
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "DELETE",
+        CURLOPT_HTTPHEADER => [
+            "Authorization: Bearer " . SUPABASE_ANON_KEY
+        ],
+    ]);
+
+    $response = curl_exec($curl);
+    $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    $err = curl_error($curl);
+    curl_close($curl);
+
+    if ($err) {
+        error_log("Error al eliminar archivo: " . $err);
+        return false;
+    }
+
+    return ($http_code >= 200 && $http_code < 300);
+}
+
+// Construir URL pública
 function obtenerUrlPublica($fileName) {
     return SUPABASE_URL . "/storage/v1/object/public/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName;
 }
 
-// Nombre fijo para sobrescribir archivo sin importar extensión
-function nombreArchivoFijo($id, $tipo) {
-    return "{$id}_{$tipo}"; // sin extensión
+// Nombre de archivo fijo
+function nombreArchivoFijo($id, $tipo, $ext) {
+    return "{$id}_{$tipo}." . $ext;
 }
 
 // Recoger datos del formulario
@@ -90,14 +117,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $allowed_types = ['jpg', 'jpeg', 'png'];
 
-    // LICENCIA
+    // === LICENCIA ===
     if (isset($_FILES["licencia_de_conducir"]) && $_FILES["licencia_de_conducir"]["error"] === 0) {
-        if (!in_array(strtolower(pathinfo($_FILES["licencia_de_conducir"]["name"], PATHINFO_EXTENSION)), $allowed_types) 
-            || getimagesize($_FILES["licencia_de_conducir"]["tmp_name"]) === false) {
+        $ext = strtolower(pathinfo($_FILES["licencia_de_conducir"]["name"], PATHINFO_EXTENSION));
+        if (!in_array($ext, $allowed_types) || getimagesize($_FILES["licencia_de_conducir"]["tmp_name"]) === false) {
             $_SESSION['error_archivo'] = "Archivo licencia inválido.";
             exit();
         }
-        $nombre_base = nombreArchivoFijo($last_id, "licencia");
+        $nombre_base = nombreArchivoFijo($last_id, "licencia", $ext);
+
+        if (!empty($row['licencia_de_conducir'])) {
+            $nombre_antiguo = basename(parse_url($row['licencia_de_conducir'], PHP_URL_PATH));
+            eliminarArchivoSupabase($nombre_antiguo);
+        }
+
         if (!subirArchivoASupabase($_FILES["licencia_de_conducir"]["tmp_name"], $nombre_base)) {
             die("Error al subir la licencia.");
         }
@@ -106,14 +139,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $licencia_de_conducir_url = $row['licencia_de_conducir'];
     }
 
-    // TARJETA
+    // === TARJETA ===
     if (isset($_FILES["tarjeta_de_propiedad"]) && $_FILES["tarjeta_de_propiedad"]["error"] === 0) {
-        if (!in_array(strtolower(pathinfo($_FILES["tarjeta_de_propiedad"]["name"], PATHINFO_EXTENSION)), $allowed_types) 
-            || getimagesize($_FILES["tarjeta_de_propiedad"]["tmp_name"]) === false) {
+        $ext = strtolower(pathinfo($_FILES["tarjeta_de_propiedad"]["name"], PATHINFO_EXTENSION));
+        if (!in_array($ext, $allowed_types) || getimagesize($_FILES["tarjeta_de_propiedad"]["tmp_name"]) === false) {
             $_SESSION['error_archivo'] = "Archivo tarjeta inválido.";
             exit();
         }
-        $nombre_base = nombreArchivoFijo($last_id, "tarjeta");
+        $nombre_base = nombreArchivoFijo($last_id, "tarjeta", $ext);
+
+        if (!empty($row['tarjeta_de_propiedad'])) {
+            $nombre_antiguo = basename(parse_url($row['tarjeta_de_propiedad'], PHP_URL_PATH));
+            eliminarArchivoSupabase($nombre_antiguo);
+        }
+
         if (!subirArchivoASupabase($_FILES["tarjeta_de_propiedad"]["tmp_name"], $nombre_base)) {
             die("Error al subir la tarjeta.");
         }
@@ -122,14 +161,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tarjeta_de_propiedad_url = $row['tarjeta_de_propiedad'];
     }
 
-    // SOAT
+    // === SOAT ===
     if (isset($_FILES["soat"]) && $_FILES["soat"]["error"] === 0) {
-        if (!in_array(strtolower(pathinfo($_FILES["soat"]["name"], PATHINFO_EXTENSION)), $allowed_types) 
-            || getimagesize($_FILES["soat"]["tmp_name"]) === false) {
+        $ext = strtolower(pathinfo($_FILES["soat"]["name"], PATHINFO_EXTENSION));
+        if (!in_array($ext, $allowed_types) || getimagesize($_FILES["soat"]["tmp_name"]) === false) {
             $_SESSION['error_archivo'] = "Archivo SOAT inválido.";
             exit();
         }
-        $nombre_base = nombreArchivoFijo($last_id, "soat");
+        $nombre_base = nombreArchivoFijo($last_id, "soat", $ext);
+
+        if (!empty($row['soat'])) {
+            $nombre_antiguo = basename(parse_url($row['soat'], PHP_URL_PATH));
+            eliminarArchivoSupabase($nombre_antiguo);
+        }
+
         if (!subirArchivoASupabase($_FILES["soat"]["tmp_name"], $nombre_base)) {
             die("Error al subir el SOAT.");
         }
@@ -138,14 +183,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $soat_url = $row['soat'];
     }
 
-    // TECNOMECÁNICA
+    // === TECNOMECÁNICA ===
     if (isset($_FILES["tecno_mecanica"]) && $_FILES["tecno_mecanica"]["error"] === 0) {
-        if (!in_array(strtolower(pathinfo($_FILES["tecno_mecanica"]["name"], PATHINFO_EXTENSION)), $allowed_types) 
-            || getimagesize($_FILES["tecno_mecanica"]["tmp_name"]) === false) {
+        $ext = strtolower(pathinfo($_FILES["tecno_mecanica"]["name"], PATHINFO_EXTENSION));
+        if (!in_array($ext, $allowed_types) || getimagesize($_FILES["tecno_mecanica"]["tmp_name"]) === false) {
             $_SESSION['error_archivo'] = "Archivo tecnomecánica inválido.";
             exit();
         }
-        $nombre_base = nombreArchivoFijo($last_id, "tecno");
+        $nombre_base = nombreArchivoFijo($last_id, "tecno", $ext);
+
+        if (!empty($row['tecno_mecanica'])) {
+            $nombre_antiguo = basename(parse_url($row['tecno_mecanica'], PHP_URL_PATH));
+            eliminarArchivoSupabase($nombre_antiguo);
+        }
+
         if (!subirArchivoASupabase($_FILES["tecno_mecanica"]["tmp_name"], $nombre_base)) {
             die("Error al subir la tecnomecánica.");
         }
@@ -154,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tecno_mecanica_url = $row['tecno_mecanica'];
     }
 
-    // Actualizar en la base de datos
+    // === Actualizar DB ===
     $sql_update = "UPDATE documentos SET 
                     placa = ?, 
                     marca = ?, 
