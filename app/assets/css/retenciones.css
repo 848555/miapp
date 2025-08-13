@@ -100,7 +100,25 @@ h2 {
   color: #007BFF;
   border-color: #007BFF;
 }
-
+.btn-regresar{
+   padding: 12px 24px;
+  border: 2px solid #007BFF;
+  font-size: 14px;
+  background: #007BFF;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all 300ms ease-in-out;
+  color: white;
+  border-radius: 5px;
+  text-align: center;
+  width: 100%;
+  text-decoration: none;
+}
+.btn-regresar:hover{
+  background: white;
+  color: #007BFF;
+  border-color: #007BFF;}
 /* Botones organizados */
 .botones-container {
   display: flex;
