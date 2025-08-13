@@ -63,23 +63,20 @@ if ($stmt) {
 
             if ($stmt_update->execute()) {
                 // Insertar mensaje en la tabla de mensajes con 'leido' = 0
-                $mensaje = "Tu solicitud ha sido aceptada.";
-                $leido = 0;
-                $sql_insert_mensaje = "INSERT INTO mensajes_temporales (id_solicitud, id_usuario, mensaje, fecha, leido) VALUES (?, ?, ?, NOW(), ?)";
-                $stmt_insert = $conexion->prepare($sql_insert_mensaje);
+               $mensaje = "Tu solicitud ha sido aceptada.";
+$leido = 0;
 
-                if ($stmt_insert) {
-                    $stmt_insert->bind_param("iisi", $id_solicitud, $id_usuario, $mensaje, $leido);
-                    $stmt_insert->execute();
-                    $stmt_insert->close();
+$sql_insert_mensaje = "INSERT INTO mensajes_temporales (id_usuario, id_solicitud, mensaje, fecha, leido) VALUES (?, ?, ?, NOW(), ?)";
+$stmt_insert = $conexion->prepare($sql_insert_mensaje);
 
-                    // Marcar al mototaxista como en servicio
-                    $conexion->query("UPDATE mototaxistas_en_linea SET en_servicio = 1 WHERE id_usuario = $id_usuario");
+if ($stmt_insert) {
+    $stmt_insert->bind_param("iisi", $id_usuario, $id_solicitud, $mensaje, $leido);
+    $stmt_insert->execute();
+    $stmt_insert->close();
+} else {
+    $_SESSION['error_message'] = "Error al enviar notificación: " . $conexion->error;
+}
 
-                    $_SESSION['success_message'] = "Solicitud aceptada correctamente y notificación enviada al solicitante.";
-                } else {
-                    $_SESSION['error_message'] = "Error al enviar notificación: " . $conexion->error;
-                }
             } else {
                 $_SESSION['error_message'] = "Error al actualizar la solicitud: " . $conexion->error;
             }
