@@ -102,7 +102,7 @@ $img_paths = [];
 
 foreach ($files as $key => $file) {
     $ext = pathinfo($file["name"], PATHINFO_EXTENSION);
-    $final_name = $last_id . "_" . $key . "." . $ext;
+    $final_name = $id_usuarios . "_" . $key . "." . $ext;
 
     $ruta = subirASupabase($file["tmp_name"], $final_name);
     if ($ruta === false) {
