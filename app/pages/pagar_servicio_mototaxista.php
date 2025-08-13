@@ -63,6 +63,8 @@ $resultado = $stmt->get_result();
         </div>
     <?php endif; ?>
 <br></br>
+    <br></br>
+    <br></br>
   <!-- Botón regresar dentro del container -->
     <div class="mt-4">
         <a href="/app/pages/inicio.php" class="btn-regresar">Regresar</a>
