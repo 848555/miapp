@@ -71,9 +71,8 @@ $resultado = $stmt->get_result();
     <?php endif; ?>
 </div>
 <!-- Botón que siempre se muestra -->
-<div class="botones-container mt-4">
-    <a href="/app/pages/inicio.php" class="btn btn-regresar">Regresar</a>
-</div>
+ <a href="/app/pages/inicio.php" class="btn btn-regresar">Regresar</a>
+
 <!-- Ícono de accesibilidad -->
 <div id="accessibility-icon">
     <ion-icon name="accessibility-outline"></ion-icon>
