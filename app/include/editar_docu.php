@@ -8,38 +8,21 @@ include(__DIR__ . '../../../config/conexion.php');
 
 // Configuración Supabase
 define('SUPABASE_URL', 'https://ccfwmhwwjbzhsdtqusrw.supabase.co');
-define('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...');
+define('SUPABASE_ANON_KEY', 'TU_API_KEY');
 define('SUPABASE_STORAGE_BUCKET', 'documentos');
 
-// ---- Funciones ---- //
 function subirArchivoASupabase($fileTmpPath, $fileName) {
-    $url = SUPABASE_URL . "/storage/v1/object/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName . "?upsert=true";
-    $curl = curl_init();
-    curl_setopt_array($curl, [
-        CURLOPT_URL => $url,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_CUSTOMREQUEST => "PUT",
-        CURLOPT_POSTFIELDS => file_get_contents($fileTmpPath),
-        CURLOPT_HTTPHEADER => [
-            "Authorization: Bearer " . SUPABASE_ANON_KEY,
-            "Content-Type: application/octet-stream"
-        ],
-    ]);
-    $response = curl_exec($curl);
-    $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    curl_close($curl);
-    return ($http_code >= 200 && $http_code < 300);
-}
-
-function eliminarArchivoSupabase($fileName) {
     $url = SUPABASE_URL . "/storage/v1/object/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName;
     $curl = curl_init();
     curl_setopt_array($curl, [
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_CUSTOMREQUEST => "DELETE",
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => file_get_contents($fileTmpPath),
         CURLOPT_HTTPHEADER => [
-            "Authorization: Bearer " . SUPABASE_ANON_KEY
+            "Authorization: Bearer " . SUPABASE_ANON_KEY,
+            "Content-Type: application/octet-stream",
+            "x-upsert: true"
         ],
     ]);
     $response = curl_exec($curl);
@@ -49,25 +32,23 @@ function eliminarArchivoSupabase($fileName) {
 }
 
 function obtenerUrlPublica($fileName) {
-    return SUPABASE_URL . "/storage/v1/object/public/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName . "?t=" . time();
+    return SUPABASE_URL . "/storage/v1/object/public/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName;
 }
 
-function nombreArchivoFijo($id, $tipo, $extension) {
-    return "{$id}_{$tipo}.{$extension}";
-}
-
-// ---- Procesar datos ---- //
-$id_usuarios = $_SESSION['id_usuario'] ?? "";
-if (empty($id_usuarios)) {
-    die("Error: usuario no identificado.");
+function nombreArchivoUnico($id, $tipo, $extension) {
+    return "{$id}_{$tipo}_" . date("Ymd_His") . ".{$extension}";
 }
 
 $placa  = $_POST["placa"] ?? "";
 $marca  = $_POST["marca"] ?? "";
 $modelo = $_POST["modelo"] ?? "";
 $color  = $_POST["color"] ?? "";
+$id_usuarios = $_SESSION['id_usuario'] ?? "";
 
-// Verificar si el registro existe
+if (empty($id_usuarios)) {
+    die('Error: el id_usuarios no está definido.');
+}
+
 $sql_check = "SELECT * FROM documentos WHERE id_usuarios = $id_usuarios LIMIT 1";
 $result = $conexion->query($sql_check);
 
@@ -75,57 +56,47 @@ if ($result && $result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $last_id = $row['id_documentos'];
 } else {
-    $conexion->query("INSERT INTO documentos (placa, marca, modelo, color, id_usuarios) 
-                      VALUES ('$placa', '$marca', '$modelo', '$color', '$id_usuarios')");
-    $last_id = $conexion->insert_id;
-    $row = ['licencia_de_conducir' => '', 'tarjeta_de_propiedad' => '', 'soat' => '', 'tecno_mecanica' => ''];
+    $sql = "INSERT INTO documentos (placa, marca, modelo, color, id_usuarios) 
+            VALUES ('$placa', '$marca', '$modelo', '$color', '$id_usuarios')";
+    if ($conexion->query($sql) === TRUE) {
+        $last_id = $conexion->insert_id;
+        $row = ['licencia_de_conducir' => "", 'tarjeta_de_propiedad' => "", 'soat' => "", 'tecno_mecanica' => ""];
+    } else {
+        die("Error: " . $conexion->error);
+    }
 }
 
 $allowed_types = ['jpg', 'jpeg', 'png'];
 $img_paths = [
     'licencia_de_conducir' => $row['licencia_de_conducir'],
     'tarjeta_de_propiedad' => $row['tarjeta_de_propiedad'],
-    'soat'                 => $row['soat'],
-    'tecno_mecanica'       => $row['tecno_mecanica']
+    'soat' => $row['soat'],
+    'tecno_mecanica' => $row['tecno_mecanica']
 ];
 
-function procesarDocumento($campo, $tipo, &$img_paths, $row, $last_id, $allowed_types) {
+foreach ($img_paths as $campo => &$url_guardada) {
     if (isset($_FILES[$campo]) && $_FILES[$campo]["error"] === 0) {
         $ext = strtolower(pathinfo($_FILES[$campo]["name"], PATHINFO_EXTENSION));
         if (!in_array($ext, $allowed_types) || getimagesize($_FILES[$campo]["tmp_name"]) === false) {
-            die("Archivo $tipo inválido.");
+            die("Archivo $campo inválido.");
         }
-        // Eliminar anterior si existe
-        if (!empty($row[$campo])) {
-            $nombre_anterior = basename(parse_url($row[$campo], PHP_URL_PATH));
-            eliminarArchivoSupabase($nombre_anterior);
+        $nombre_nuevo = nombreArchivoUnico($last_id, $campo, $ext);
+        if (!subirArchivoASupabase($_FILES[$campo]["tmp_name"], $nombre_nuevo)) {
+            die("Error al subir $campo.");
         }
-        // Subir nuevo
-        $nombre_nuevo = nombreArchivoFijo($last_id, $tipo, $ext);
-        if (subirArchivoASupabase($_FILES[$campo]["tmp_name"], $nombre_nuevo)) {
-            $img_paths[$campo] = obtenerUrlPublica($nombre_nuevo);
-        } else {
-            die("Error al subir $tipo.");
-        }
+        $url_guardada = obtenerUrlPublica($nombre_nuevo);
     }
 }
 
-// Procesar cada archivo
-procesarDocumento('licencia_de_conducir', 'licencia', $img_paths, $row, $last_id, $allowed_types);
-procesarDocumento('tarjeta_de_propiedad', 'tarjeta', $img_paths, $row, $last_id, $allowed_types);
-procesarDocumento('soat', 'soat', $img_paths, $row, $last_id, $allowed_types);
-procesarDocumento('tecno_mecanica', 'tecno', $img_paths, $row, $last_id, $allowed_types);
-
-// Guardar cambios en BD
 $sql_update = "UPDATE documentos SET 
-    placa='$placa', 
-    marca='$marca', 
-    modelo='$modelo', 
-    color='$color', 
     licencia_de_conducir='{$img_paths['licencia_de_conducir']}', 
     tarjeta_de_propiedad='{$img_paths['tarjeta_de_propiedad']}', 
     soat='{$img_paths['soat']}', 
-    tecno_mecanica='{$img_paths['tecno_mecanica']}' 
+    tecno_mecanica='{$img_paths['tecno_mecanica']}',
+    placa='$placa', 
+    marca='$marca', 
+    modelo='$modelo', 
+    color='$color'
     WHERE id_documentos=$last_id";
 
 if ($conexion->query($sql_update)) {
