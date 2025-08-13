@@ -23,32 +23,30 @@ function eliminarArchivoSupabase($nombreArchivo) {
     curl_exec($ch);
     $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-
     return ($status >= 200 && $status < 300);
 }
 
+// ✅ Subir archivo usando PUT (actualiza o crea)
 function subirArchivoASupabase($fileTmpPath, $fileName) {
     $url = SUPABASE_URL . "/storage/v1/object/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName;
-    $curl = curl_init();
-    curl_setopt_array($curl, [
-        CURLOPT_URL => $url,
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_CUSTOMREQUEST => "PUT",
         CURLOPT_POSTFIELDS => file_get_contents($fileTmpPath),
         CURLOPT_HTTPHEADER => [
             "Authorization: Bearer " . SUPABASE_KEY,
             "Content-Type: application/octet-stream"
         ],
     ]);
-    curl_exec($curl);
-    $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    curl_close($curl);
-
-    return ($http_code >= 200 && $http_code < 300);
+    curl_exec($ch);
+    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    return ($status >= 200 && $status < 300);
 }
 
 function nombreArchivoUnico($id, $campo, $extension) {
-    return "{$id}_{$campo}_" . uniqid() . ".{$extension}";
+    return "{$id}_{$campo}." . $extension; // Sin uniqid() para poder reemplazar
 }
 
 // ====== Datos recibidos ======
@@ -79,8 +77,6 @@ if (!$row) {
     $stmt->bind_param("ssssi", $placa, $marca, $modelo, $color, $id_usuarios);
     $stmt->execute();
     $stmt->close();
-
-    // Obtener el registro recién creado
     $stmt = $conexion->prepare($sql_check);
     $stmt->bind_param("i", $id_usuarios);
     $stmt->execute();
@@ -111,28 +107,20 @@ foreach ($img_paths as $campo => &$nombreArchivo) {
 
     if (isset($_FILES[$input]) && $_FILES[$input]['error'] === 0) {
         $ext = strtolower(pathinfo($_FILES[$input]["name"], PATHINFO_EXTENSION));
+        if (!in_array($ext, $allowed_types) || getimagesize($_FILES[$input]["tmp_name"]) === false) continue;
 
-        if (!in_array($ext, $allowed_types) || getimagesize($_FILES[$input]["tmp_name"]) === false) {
-            continue; // Ignorar archivo inválido
-        }
-
-        // Eliminar archivo anterior
-        if (!empty($nombreArchivo)) {
-            eliminarArchivoSupabase($nombreArchivo);
-        }
-
-        // Subir nuevo archivo
+        // Generar nombre fijo para reemplazar archivo
         $nombreNuevo = nombreArchivoUnico($id_usuarios, $campo, $ext);
+
+        // Subir archivo a Supabase (PUT reemplaza)
         if (subirArchivoASupabase($_FILES[$input]["tmp_name"], $nombreNuevo)) {
             $nombreArchivo = $nombreNuevo;
         }
     } elseif (isset($_POST[$campo . '_actual'])) {
-        // Mantener archivo actual si no se subió uno nuevo
         $nombreArchivo = $_POST[$campo . '_actual'];
     }
 }
 unset($nombreArchivo);
-
 // ====== Actualizar MySQL ======
 $sql_update = "UPDATE documentos SET 
     licencia_de_conducir = ?, 
