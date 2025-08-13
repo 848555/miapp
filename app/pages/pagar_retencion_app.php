@@ -44,7 +44,7 @@ $resultado = $conexion->query($sql);
 
             <div class="botones-container mt-4">
                 <button type="submit" class="btn btn-success">Simular pago con Nequi</button>
-                <a href="/app/pages/inicio.php" class="btn btn-success">Regresar</a>
+             
             </div>
         </form>
     <?php else: ?>
@@ -52,7 +52,12 @@ $resultado = $conexion->query($sql);
             No tienes retenciones pendientes por pagar.
         </div>
     <?php endif; ?>
-
+ <br></br>
+    <br></br>
+  <!-- Botón regresar dentro del container -->
+    <div class="mt-4">
+           <a href="/app/pages/inicio.php" class="btn btn-success">Regresar</a>
+    </div>
     <?php if (isset($_SESSION['mensaje'])): ?>
         <div class="alert alert-warning mt-4 text-center">
             <?= $_SESSION['mensaje']; ?>
