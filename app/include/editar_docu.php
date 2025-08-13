@@ -14,7 +14,7 @@ define('SUPABASE_STORAGE_BUCKET', 'documentos'); // Cambia al bucket que uses
 
 // Función para subir archivo a Supabase Storage vía API REST
 function subirArchivoASupabase($fileTmpPath, $fileName) {
-    $url = SUPABASE_URL . "/storage/v1/object/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName;
+    $url = SUPABASE_URL . "/storage/v1/object/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName . "?upsert=true";
 
     $curl = curl_init();
 
@@ -30,14 +30,20 @@ function subirArchivoASupabase($fileTmpPath, $fileName) {
     ]);
 
     $response = curl_exec($curl);
+    $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     $err = curl_error($curl);
-
     curl_close($curl);
 
     if ($err) {
+        error_log("cURL Error: " . $err);
         return false;
+    }
+
+    if ($http_code >= 200 && $http_code < 300) {
+        return true; // Éxito
     } else {
-        return true;
+        error_log("Supabase error ($http_code): " . $response);
+        return false;
     }
 }
 
