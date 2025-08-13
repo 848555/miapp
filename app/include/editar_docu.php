@@ -3,21 +3,20 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-session_start(); // Iniciar sesión si no está iniciada
+session_start();
 
 include(__DIR__ . '../../../config/conexion.php');
 
 // Configuración Supabase
 define('SUPABASE_URL', 'https://ccfwmhwwjbzhsdtqusrw.supabase.co');
-define('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZndtaHd3amJ6aHNkdHF1c3J3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mzg4ODExNiwiZXhwIjoyMDY5NDY0MTE2fQ.VL_ha2fmlgATu_ZRfknmXh_TkyDMhkWne4XojZ8qFWw'); // Usa tu key adecuada
-define('SUPABASE_STORAGE_BUCKET', 'documentos'); // Cambia al bucket que uses
+define('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZndtaHd3amJ6aHNkdHF1c3J3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mzg4ODExNiwiZXhwIjoyMDY5NDY0MTE2fQ.VL_ha2fmlgATu_ZRfknmXh_TkyDMhkWne4XojZ8qFWw');
+define('SUPABASE_STORAGE_BUCKET', 'documentos');
 
-// Función para subir archivo a Supabase Storage vía API REST
+// Función para subir archivo a Supabase Storage con upsert
 function subirArchivoASupabase($fileTmpPath, $fileName) {
     $url = SUPABASE_URL . "/storage/v1/object/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName . "?upsert=true";
 
     $curl = curl_init();
-
     curl_setopt_array($curl, [
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
@@ -39,33 +38,32 @@ function subirArchivoASupabase($fileTmpPath, $fileName) {
         return false;
     }
 
-    if ($http_code >= 200 && $http_code < 300) {
-        return true; // Éxito
-    } else {
-        error_log("Supabase error ($http_code): " . $response);
-        return false;
-    }
+    return ($http_code >= 200 && $http_code < 300);
 }
 
-// Construir URL pública para archivos (asumiendo bucket público)
+// Construir URL pública para archivos
 function obtenerUrlPublica($fileName) {
     return SUPABASE_URL . "/storage/v1/object/public/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName;
 }
 
-// Recoger datos de texto del formulario
-$placa  = isset($_POST["placa"]) ? $_POST["placa"] : "";
-$marca  = isset($_POST["marca"]) ? $_POST["marca"] : "";
-$modelo = isset($_POST["modelo"]) ? $_POST["modelo"] : "";
-$color  = isset($_POST["color"]) ? $_POST["color"] : "";
+// Nombre fijo para sobrescribir archivo sin importar extensión
+function nombreArchivoFijo($id, $tipo) {
+    return "{$id}_{$tipo}"; // sin extensión
+}
 
-// Obtener el id_usuarios de la sesión
-$id_usuarios = isset($_SESSION['id_usuario']) ? $_SESSION['id_usuario'] : "";
+// Recoger datos del formulario
+$placa  = $_POST["placa"] ?? "";
+$marca  = $_POST["marca"] ?? "";
+$modelo = $_POST["modelo"] ?? "";
+$color  = $_POST["color"] ?? "";
+
+$id_usuarios = $_SESSION['id_usuario'] ?? "";
 if (empty($id_usuarios)) {
     die('Error: el id_usuarios no está definido.');
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Verificar si ya existe un registro para este usuario
+    // Verificar si ya existe registro
     $sql_check = "SELECT * FROM documentos WHERE id_usuarios = $id_usuarios LIMIT 1";
     $result = $conexion->query($sql_check);
 
@@ -73,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $row = $result->fetch_assoc();
         $last_id = $row['id_documentos'];
     } else {
-        // Insertar nuevo registro de texto
+        // Crear nuevo registro
         $sql = "INSERT INTO documentos (placa, marca, modelo, color, id_usuarios) 
                 VALUES ('$placa', '$marca', '$modelo', '$color', '$id_usuarios')";
         if ($conexion->query($sql) === TRUE) {
@@ -85,80 +83,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'tecno_mecanica' => ""
             ];
         } else {
-            echo "Error: " . $sql . "<br>" . $conexion->error;
+            echo "Error: " . $conexion->error;
             exit();
         }
     }
 
     $allowed_types = ['jpg', 'jpeg', 'png'];
 
-    // Procesar cada archivo: si se sube, subir a Supabase, sino conservar URL previa
-
-    // Licencia de conducir
+    // LICENCIA
     if (isset($_FILES["licencia_de_conducir"]) && $_FILES["licencia_de_conducir"]["error"] === 0) {
-        $ext = strtolower(pathinfo($_FILES["licencia_de_conducir"]["name"], PATHINFO_EXTENSION));
-        if (!in_array($ext, $allowed_types) || getimagesize($_FILES["licencia_de_conducir"]["tmp_name"]) === false) {
+        if (!in_array(strtolower(pathinfo($_FILES["licencia_de_conducir"]["name"], PATHINFO_EXTENSION)), $allowed_types) 
+            || getimagesize($_FILES["licencia_de_conducir"]["tmp_name"]) === false) {
             $_SESSION['error_archivo'] = "Archivo licencia inválido.";
             exit();
         }
-        $licencia_de_conducir_name = $last_id . "_licencia." . $ext;
-        if (!subirArchivoASupabase($_FILES["licencia_de_conducir"]["tmp_name"], $licencia_de_conducir_name)) {
-            die("Error al subir la licencia a Supabase Storage.");
+        $nombre_base = nombreArchivoFijo($last_id, "licencia");
+        if (!subirArchivoASupabase($_FILES["licencia_de_conducir"]["tmp_name"], $nombre_base)) {
+            die("Error al subir la licencia.");
         }
-        $licencia_de_conducir_url = obtenerUrlPublica($licencia_de_conducir_name);
+        $licencia_de_conducir_url = obtenerUrlPublica($nombre_base) . "?t=" . time();
     } else {
         $licencia_de_conducir_url = $row['licencia_de_conducir'];
     }
 
-    // Tarjeta de propiedad
+    // TARJETA
     if (isset($_FILES["tarjeta_de_propiedad"]) && $_FILES["tarjeta_de_propiedad"]["error"] === 0) {
-        $ext = strtolower(pathinfo($_FILES["tarjeta_de_propiedad"]["name"], PATHINFO_EXTENSION));
-        if (!in_array($ext, $allowed_types) || getimagesize($_FILES["tarjeta_de_propiedad"]["tmp_name"]) === false) {
+        if (!in_array(strtolower(pathinfo($_FILES["tarjeta_de_propiedad"]["name"], PATHINFO_EXTENSION)), $allowed_types) 
+            || getimagesize($_FILES["tarjeta_de_propiedad"]["tmp_name"]) === false) {
             $_SESSION['error_archivo'] = "Archivo tarjeta inválido.";
             exit();
         }
-        $tarjeta_de_propiedad_name = $last_id . "_tarjeta." . $ext;
-        if (!subirArchivoASupabase($_FILES["tarjeta_de_propiedad"]["tmp_name"], $tarjeta_de_propiedad_name)) {
-            die("Error al subir la tarjeta de propiedad a Supabase Storage.");
+        $nombre_base = nombreArchivoFijo($last_id, "tarjeta");
+        if (!subirArchivoASupabase($_FILES["tarjeta_de_propiedad"]["tmp_name"], $nombre_base)) {
+            die("Error al subir la tarjeta.");
         }
-        $tarjeta_de_propiedad_url = obtenerUrlPublica($tarjeta_de_propiedad_name);
+        $tarjeta_de_propiedad_url = obtenerUrlPublica($nombre_base) . "?t=" . time();
     } else {
         $tarjeta_de_propiedad_url = $row['tarjeta_de_propiedad'];
     }
 
-    // Soat
+    // SOAT
     if (isset($_FILES["soat"]) && $_FILES["soat"]["error"] === 0) {
-        $ext = strtolower(pathinfo($_FILES["soat"]["name"], PATHINFO_EXTENSION));
-        if (!in_array($ext, $allowed_types) || getimagesize($_FILES["soat"]["tmp_name"]) === false) {
+        if (!in_array(strtolower(pathinfo($_FILES["soat"]["name"], PATHINFO_EXTENSION)), $allowed_types) 
+            || getimagesize($_FILES["soat"]["tmp_name"]) === false) {
             $_SESSION['error_archivo'] = "Archivo SOAT inválido.";
             exit();
         }
-        $soat_name = $last_id . "_soat." . $ext;
-        if (!subirArchivoASupabase($_FILES["soat"]["tmp_name"], $soat_name)) {
-            die("Error al subir el SOAT a Supabase Storage.");
+        $nombre_base = nombreArchivoFijo($last_id, "soat");
+        if (!subirArchivoASupabase($_FILES["soat"]["tmp_name"], $nombre_base)) {
+            die("Error al subir el SOAT.");
         }
-        $soat_url = obtenerUrlPublica($soat_name);
+        $soat_url = obtenerUrlPublica($nombre_base) . "?t=" . time();
     } else {
         $soat_url = $row['soat'];
     }
 
-    // Tecnomecánica
+    // TECNOMECÁNICA
     if (isset($_FILES["tecno_mecanica"]) && $_FILES["tecno_mecanica"]["error"] === 0) {
-        $ext = strtolower(pathinfo($_FILES["tecno_mecanica"]["name"], PATHINFO_EXTENSION));
-        if (!in_array($ext, $allowed_types) || getimagesize($_FILES["tecno_mecanica"]["tmp_name"]) === false) {
+        if (!in_array(strtolower(pathinfo($_FILES["tecno_mecanica"]["name"], PATHINFO_EXTENSION)), $allowed_types) 
+            || getimagesize($_FILES["tecno_mecanica"]["tmp_name"]) === false) {
             $_SESSION['error_archivo'] = "Archivo tecnomecánica inválido.";
             exit();
         }
-        $tecno_mecanica_name = $last_id . "_tecno." . $ext;
-        if (!subirArchivoASupabase($_FILES["tecno_mecanica"]["tmp_name"], $tecno_mecanica_name)) {
-            die("Error al subir la tecnomecánica a Supabase Storage.");
+        $nombre_base = nombreArchivoFijo($last_id, "tecno");
+        if (!subirArchivoASupabase($_FILES["tecno_mecanica"]["tmp_name"], $nombre_base)) {
+            die("Error al subir la tecnomecánica.");
         }
-        $tecno_mecanica_url = obtenerUrlPublica($tecno_mecanica_name);
+        $tecno_mecanica_url = obtenerUrlPublica($nombre_base) . "?t=" . time();
     } else {
         $tecno_mecanica_url = $row['tecno_mecanica'];
     }
 
-    // Actualizar base de datos con URLs públicas
+    // Actualizar en la base de datos
     $sql_update = "UPDATE documentos SET 
                     placa = ?, 
                     marca = ?, 
@@ -184,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     );
 
     if ($stmt->execute()) {
-        $_SESSION['success_message'] = "<p style='color: green;'>Documentos actualizados correctamente, ya puedes aceptar un servicio.</p>";
+        $_SESSION['success_message'] = "<p style='color: green;'>Documentos actualizados correctamente.</p>";
         header("Location: ../pages/sermototaxista.php");
         exit();
     } else {
