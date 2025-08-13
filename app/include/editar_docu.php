@@ -8,7 +8,7 @@ include(__DIR__ . '../../../config/conexion.php');
 
 // Configuración Supabase
 define('SUPABASE_URL', 'https://ccfwmhwwjbzhsdtqusrw.supabase.co');
-define('SUPABASE_KEY', 'TU_SERVICE_ROLE_KEY'); // Debe ser la de servicio, no la anónima
+define('SUPABASE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZndtaHd3amJ6aHNkdHF1c3J3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mzg4ODExNiwiZXhwIjoyMDY5NDY0MTE2fQ.VL_ha2fmlgATu_ZRfknmXh_TkyDMhkWne4XojZ8qFWw'); // Service role key
 define('SUPABASE_BUCKET', 'documentos');
 
 function subirArchivoASupabase($fileTmpPath, $fileName) {
