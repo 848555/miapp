@@ -9,7 +9,7 @@ define('SUPABASE_URL', 'https://ccfwmhwwjbzhsdtqusrw.supabase.co');
 define('SUPABASE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZndtaHd3amJ6aHNkdHF1c3J3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mzg4ODExNiwiZXhwIjoyMDY5NDY0MTE2fQ.VL_ha2fmlgATu_ZRfknmXh_TkyDMhkWne4XojZ8qFWw');
 define('SUPABASE_STORAGE_BUCKET', 'documentos');
 
-// ====== Funciones para Supabase ======
+// ====== Funciones ======
 function extraerPathInterno($urlPublica) {
     if (!$urlPublica) return '';
     $prefix = SUPABASE_URL . "/storage/v1/object/public/" . SUPABASE_STORAGE_BUCKET . "/";
@@ -32,7 +32,6 @@ function eliminarArchivoSupabase($urlPublica) {
     curl_exec($ch);
     $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-
     return ($status >= 200 && $status < 300);
 }
 
@@ -52,7 +51,6 @@ function subirArchivoASupabase($fileTmpPath, $fileName) {
     $response = curl_exec($curl);
     $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     curl_close($curl);
-
     return ($http_code >= 200 && $http_code < 300);
 }
 
@@ -80,11 +78,9 @@ function actualizarSupabase($id_usuarios, $data) {
             "Prefer: return=representation"
         ],
     ]);
-
     $response = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-
     return ($http_code >= 200 && $http_code < 300);
 }
 
@@ -94,13 +90,11 @@ $marca  = $_POST["marca"] ?? "";
 $modelo = $_POST["modelo"] ?? "";
 $color  = $_POST["color"] ?? "";
 $id_usuarios = $_SESSION['id_usuario'] ?? "";
+if (empty($id_usuarios)) die(header("Location: ../pages/inicio.php"));
 
-if (empty($id_usuarios)) die('Error: el id_usuarios no está definido.');
-
-// ====== Obtener registro existente en MySQL ======
+// ====== Obtener registro existente ======
 $sql_check = "SELECT * FROM documentos WHERE id_usuarios = " . intval($id_usuarios) . " LIMIT 1";
 $result = $conexion->query($sql_check);
-
 if ($result && $result->num_rows > 0) {
     $row = $result->fetch_assoc();
 } else {
@@ -111,25 +105,26 @@ if ($result && $result->num_rows > 0) {
     $row = $result->fetch_assoc();
 }
 
+// ====== Archivos ======
 $allowed_types = ['jpg','jpeg','png'];
 $img_paths = [
-    'licencia_de_conducir' => $_POST['licencia_actual'] ?? $row['licencia_de_conducir'],
-    'tarjeta_de_propiedad' => $_POST['tarjeta_actual'] ?? $row['tarjeta_de_propiedad'],
-    'soat' => $_POST['soat_actual'] ?? $row['soat'],
-    'tecno_mecanica' => $_POST['tecno_actual'] ?? $row['tecno_mecanica']
+    'licencia_img' => $_POST['licencia_actual'] ?? $row['licencia_de_conducir'],
+    'tarjeta_img' => $_POST['tarjeta_actual'] ?? $row['tarjeta_de_propiedad'],
+    'soat_img' => $_POST['soat_actual'] ?? $row['soat'],
+    'tecno_img' => $_POST['tecno_actual'] ?? $row['tecno_mecanica']
 ];
 
-// ====== Subida de archivos ======
 foreach ($img_paths as $campo => &$url_guardada) {
     if (isset($_FILES[$campo]) && $_FILES[$campo]["error"] === 0) {
         $ext = strtolower(pathinfo($_FILES[$campo]["name"], PATHINFO_EXTENSION));
-        if (!in_array($ext, $allowed_types) || getimagesize($_FILES[$campo]["tmp_name"]) === false) die("Archivo $campo inválido.");
-
+        if (!in_array($ext, $allowed_types) || getimagesize($_FILES[$campo]["tmp_name"]) === false) {
+            die(header("Location: ../pages/inicio.php"));
+        }
         if (!empty($url_guardada)) eliminarArchivoSupabase($url_guardada);
-
         $nombre_nuevo = nombreArchivoUnico($id_usuarios, $campo, $ext);
-        if (!subirArchivoASupabase($_FILES[$campo]["tmp_name"], $nombre_nuevo)) die("Error al subir $campo.");
-
+        if (!subirArchivoASupabase($_FILES[$campo]["tmp_name"], $nombre_nuevo)) {
+            die(header("Location: ../pages/inicio.php"));
+        }
         $url_guardada = obtenerUrlPublica($nombre_nuevo);
     }
 }
@@ -137,10 +132,10 @@ unset($url_guardada);
 
 // ====== Actualizar MySQL ======
 $sql_update = "UPDATE documentos SET 
-    licencia_de_conducir='" . $conexion->real_escape_string($img_paths['licencia_de_conducir']) . "', 
-    tarjeta_de_propiedad='" . $conexion->real_escape_string($img_paths['tarjeta_de_propiedad']) . "', 
-    soat='" . $conexion->real_escape_string($img_paths['soat']) . "', 
-    tecno_mecanica='" . $conexion->real_escape_string($img_paths['tecno_mecanica']) . "',
+    licencia_de_conducir='" . $conexion->real_escape_string($img_paths['licencia_img']) . "', 
+    tarjeta_de_propiedad='" . $conexion->real_escape_string($img_paths['tarjeta_img']) . "', 
+    soat='" . $conexion->real_escape_string($img_paths['soat_img']) . "', 
+    tecno_mecanica='" . $conexion->real_escape_string($img_paths['tecno_img']) . "',
     placa='" . $conexion->real_escape_string($placa) . "', 
     marca='" . $conexion->real_escape_string($marca) . "', 
     modelo='" . $conexion->real_escape_string($modelo) . "', 
@@ -154,17 +149,15 @@ $supabase_data = [
     "marca" => $marca,
     "modelo" => $modelo,
     "color" => $color,
-    "licencia_de_conducir" => $img_paths['licencia_de_conducir'],
-    "tarjeta_de_propiedad" => $img_paths['tarjeta_de_propiedad'],
-    "soat" => $img_paths['soat'],
-    "tecno_mecanica" => $img_paths['tecno_mecanica']
+    "licencia_de_conducir" => $img_paths['licencia_img'],
+    "tarjeta_de_propiedad" => $img_paths['tarjeta_img'],
+    "soat" => $img_paths['soat_img'],
+    "tecno_mecanica" => $img_paths['tecno_img']
 ];
 
-if (actualizarSupabase($id_usuarios, $supabase_data)) {
-    $_SESSION['mensaje'] = "Documentos actualizados correctamente en MySQL y Supabase.";
-    header("Location: ../pages/sermototaxista.php");
-    exit();
-} else {
-    echo "Error al actualizar Supabase.";
-}
+actualizarSupabase($id_usuarios, $supabase_data);
+
+// ====== Redirigir ======
+header("Location: ../pages/inicio.php");
+exit();
 ?>
