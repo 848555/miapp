@@ -1,6 +1,5 @@
 <?php
 ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
@@ -8,19 +7,18 @@ include(__DIR__ . '../../../config/conexion.php');
 
 // Configuración Supabase
 define('SUPABASE_URL', 'https://ccfwmhwwjbzhsdtqusrw.supabase.co');
-define('SUPABASE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZndtaHd3amJ6aHNkdHF1c3J3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mzg4ODExNiwiZXhwIjoyMDY5NDY0MTE2fQ.VL_ha2fmlgATu_ZRfknmXh_TkyDMhkWne4XojZ8qFWw'); // Service role key
-
+define('SUPABASE_KEY', 'TU_SERVICE_ROLE_KEY'); 
 define('SUPABASE_STORAGE_BUCKET', 'documentos');
 
 function extraerPathInterno($urlPublica) {
     if (!$urlPublica) return '';
     $prefix = SUPABASE_URL . "/storage/v1/object/public/" . SUPABASE_STORAGE_BUCKET . "/";
-    return str_replace($prefix, '', $urlPublica);
+    return str_replace($prefix, '', strtok($urlPublica, '?')); // quita query params
 }
 
 function eliminarArchivoSupabase($urlPublica) {
     $pathInterno = extraerPathInterno($urlPublica);
-    if (!$pathInterno) return true; // No hay archivo viejo
+    if (!$pathInterno) return true;
     $url = SUPABASE_URL . "/storage/v1/object/" . SUPABASE_STORAGE_BUCKET . "/" . $pathInterno;
 
     $ch = curl_init($url);
@@ -58,14 +56,15 @@ function subirArchivoASupabase($fileTmpPath, $fileName) {
 }
 
 function obtenerUrlPublica($fileName) {
-    return SUPABASE_URL . "/storage/v1/object/public/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName;
+    // Se agrega ?v=timestamp para evitar cache
+    return SUPABASE_URL . "/storage/v1/object/public/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName . "?v=" . time();
 }
 
 function nombreArchivoUnico($id, $tipo, $extension) {
     return "{$id}_{$tipo}_" . uniqid() . ".{$extension}";
 }
 
-// ====== Datos recibidos ======
+// ====== Datos ======
 $placa  = $_POST["placa"] ?? "";
 $marca  = $_POST["marca"] ?? "";
 $modelo = $_POST["modelo"] ?? "";
@@ -102,7 +101,7 @@ $img_paths = [
     'tecno_mecanica' => $row['tecno_mecanica']
 ];
 
-// ====== Procesar cada archivo ======
+// ====== Subida ======
 foreach ($img_paths as $campo => &$url_guardada) {
     if (isset($_FILES[$campo]) && $_FILES[$campo]["error"] === 0) {
         $ext = strtolower(pathinfo($_FILES[$campo]["name"], PATHINFO_EXTENSION));
@@ -110,21 +109,18 @@ foreach ($img_paths as $campo => &$url_guardada) {
             die("Archivo $campo inválido.");
         }
 
-        // 1️⃣ Eliminar archivo viejo si existe
         eliminarArchivoSupabase($url_guardada);
 
-        // 2️⃣ Subir nuevo con nombre único
         $nombre_nuevo = nombreArchivoUnico($last_id, $campo, $ext);
         if (!subirArchivoASupabase($_FILES[$campo]["tmp_name"], $nombre_nuevo)) {
             die("Error al subir $campo.");
         }
 
-        // 3️⃣ Guardar nueva URL pública
         $url_guardada = obtenerUrlPublica($nombre_nuevo);
     }
 }
 
-// ====== Actualizar DB ======
+// ====== Guardar en BD ======
 $sql_update = "UPDATE documentos SET 
     licencia_de_conducir='{$img_paths['licencia_de_conducir']}', 
     tarjeta_de_propiedad='{$img_paths['tarjeta_de_propiedad']}', 
@@ -143,7 +139,4 @@ if ($conexion->query($sql_update)) {
 } else {
     echo "Error al actualizar la base de datos: " . $conexion->error;
 }
-
 ?>
-
-
