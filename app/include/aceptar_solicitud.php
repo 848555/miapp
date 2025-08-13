@@ -64,7 +64,7 @@ header("Location: ../pages/sermototaxista.php");
             if ($stmt_update->execute()) {
                 // Insertar mensaje en la tabla de mensajes
                 $mensaje = "Tu solicitud ha sido aceptada.";
-                $sql_insert_mensaje = "INSERT INTO mensajes_temporales (id_solicitud, id_usuario, mensaje, fecha) VALUES (?, ?, ?, NOW())";
+                $sql_insert_mensaje = "INSERT INTO mensajes_temporales (id_solicitud, id_usuario, mensaje, fecha) VALUES (?, ?, ?, NOW(),0)";
                 $stmt_insert = $conexion->prepare($sql_insert_mensaje);
 
                 if ($stmt_insert) {
