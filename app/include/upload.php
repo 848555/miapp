@@ -10,7 +10,6 @@ include(__DIR__ . '../../../config/conexion.php');
 define('SUPABASE_URL', 'https://ccfwmhwwjbzhsdtqusrw.supabase.co'); 
 define('SUPABASE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZndtaHd3amJ6aHNkdHF1c3J3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mzg4ODExNiwiZXhwIjoyMDY5NDY0MTE2fQ.VL_ha2fmlgATu_ZRfknmXh_TkyDMhkWne4XojZ8qFWw'); // Service role key
 
-
 // Obtener el id_usuarios de la sesión
 $id_usuarios = isset($_SESSION['id_usuario']) ? $_SESSION['id_usuario'] : "";
 if (empty($id_usuarios)) {
@@ -102,7 +101,7 @@ $img_paths = [];
 
 foreach ($files as $key => $file) {
     $ext = pathinfo($file["name"], PATHINFO_EXTENSION);
-    $final_name = $id_usuarios . "_" . $key . "." . $ext;
+    $final_name = $id_usuarios . "_" . $last_id . "_" . $key . "." . $ext;
 
     $ruta = subirASupabase($file["tmp_name"], $final_name);
     if ($ruta === false) {
