@@ -56,7 +56,6 @@ function subirArchivoASupabase($fileTmpPath, $fileName) {
 }
 
 function obtenerUrlPublica($fileName) {
-    // Se agrega ?v=timestamp para evitar cache
     return SUPABASE_URL . "/storage/v1/object/public/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName . "?v=" . time();
 }
 
@@ -94,11 +93,13 @@ if ($result && $result->num_rows > 0) {
 }
 
 $allowed_types = ['jpg', 'jpeg', 'png'];
+
+// Aquí usamos los nombres que envía el formulario (según el HTML que diste)
 $img_paths = [
-    'licencia_de_conducir' => $row['licencia_de_conducir'],
-    'tarjeta_de_propiedad' => $row['tarjeta_de_propiedad'],
-    'soat' => $row['soat'],
-    'tecno_mecanica' => $row['tecno_mecanica']
+    'licencia_de_conducir' => $_POST['licencia_actual'] ?? $row['licencia_de_conducir'],
+    'tarjeta_de_propiedad' => $_POST['tarjeta_actual'] ?? $row['tarjeta_de_propiedad'],
+    'soat' => $_POST['soat_actual'] ?? $row['soat'],
+    'tecno_mecanica' => $_POST['tecno_actual'] ?? $row['tecno_mecanica']
 ];
 
 // ====== Subida ======
@@ -109,7 +110,10 @@ foreach ($img_paths as $campo => &$url_guardada) {
             die("Archivo $campo inválido.");
         }
 
-        eliminarArchivoSupabase($url_guardada);
+        // Eliminar archivo anterior en Supabase solo si hay URL previa
+        if (!empty($url_guardada)) {
+            eliminarArchivoSupabase($url_guardada);
+        }
 
         $nombre_nuevo = nombreArchivoUnico($last_id, $campo, $ext);
         if (!subirArchivoASupabase($_FILES[$campo]["tmp_name"], $nombre_nuevo)) {
@@ -119,17 +123,18 @@ foreach ($img_paths as $campo => &$url_guardada) {
         $url_guardada = obtenerUrlPublica($nombre_nuevo);
     }
 }
+unset($url_guardada); // Romper referencia
 
 // ====== Guardar en BD ======
 $sql_update = "UPDATE documentos SET 
-    licencia_de_conducir='{$img_paths['licencia_de_conducir']}', 
-    tarjeta_de_propiedad='{$img_paths['tarjeta_de_propiedad']}', 
-    soat='{$img_paths['soat']}', 
-    tecno_mecanica='{$img_paths['tecno_mecanica']}',
-    placa='$placa', 
-    marca='$marca', 
-    modelo='$modelo', 
-    color='$color'
+    licencia_de_conducir='" . $conexion->real_escape_string($img_paths['licencia_de_conducir']) . "', 
+    tarjeta_de_propiedad='" . $conexion->real_escape_string($img_paths['tarjeta_de_propiedad']) . "', 
+    soat='" . $conexion->real_escape_string($img_paths['soat']) . "', 
+    tecno_mecanica='" . $conexion->real_escape_string($img_paths['tecno_mecanica']) . "',
+    placa='" . $conexion->real_escape_string($placa) . "', 
+    marca='" . $conexion->real_escape_string($marca) . "', 
+    modelo='" . $conexion->real_escape_string($modelo) . "', 
+    color='" . $conexion->real_escape_string($color) . "'
     WHERE id_documentos=$last_id";
 
 if ($conexion->query($sql_update)) {
