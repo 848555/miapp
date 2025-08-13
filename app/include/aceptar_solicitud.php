@@ -36,25 +36,25 @@ if ($stmt) {
     $result = $stmt->get_result();
 
     if ($result->num_rows == 1) {
-        // Actualizar el estado de la solicitud a 'aceptada' y asignar el mototaxista
         // Verificar si el mototaxista ya tiene una solicitud en curso
-$sql_check_servicio = "SELECT COUNT(*) AS en_servicio FROM solicitudes WHERE id_usuarios = ? AND estado IN ('aceptada', 'en progreso')";
-$stmt_check = $conexion->prepare($sql_check_servicio);
+        $sql_check_servicio = "SELECT COUNT(*) AS en_servicio FROM solicitudes WHERE id_usuarios = ? AND estado IN ('aceptada', 'en progreso')";
+        $stmt_check = $conexion->prepare($sql_check_servicio);
 
-if ($stmt_check) {
-    $stmt_check->bind_param("i", $id_usuario);
-    $stmt_check->execute();
-    $result_check = $stmt_check->get_result();
-    $en_servicio = $result_check->fetch_assoc()['en_servicio'] ?? 0;
-    $stmt_check->close();
+        if ($stmt_check) {
+            $stmt_check->bind_param("i", $id_usuario);
+            $stmt_check->execute();
+            $result_check = $stmt_check->get_result();
+            $en_servicio = $result_check->fetch_assoc()['en_servicio'] ?? 0;
+            $stmt_check->close();
 
-    if ($en_servicio > 0) {
-        $_SESSION['error_message'] = "Ya tienes una solicitud en curso. Termínala antes de aceptar otra.";
-header("Location: ../pages/sermototaxista.php");
-        exit();
-    }
-}
+            if ($en_servicio > 0) {
+                $_SESSION['error_message'] = "Ya tienes una solicitud en curso. Termínala antes de aceptar otra.";
+                header("Location: ../pages/sermototaxista.php");
+                exit();
+            }
+        }
 
+        // Actualizar el estado de la solicitud a 'aceptada'
         $sql_update = "UPDATE solicitudes SET estado='aceptada', id_usuarios=? WHERE id_solicitud=?";
         $stmt_update = $conexion->prepare($sql_update);
 
@@ -62,17 +62,18 @@ header("Location: ../pages/sermototaxista.php");
             $stmt_update->bind_param("ii", $id_usuario, $id_solicitud);
 
             if ($stmt_update->execute()) {
-                // Insertar mensaje en la tabla de mensajes
+                // Insertar mensaje en la tabla de mensajes con 'leido' = 0
                 $mensaje = "Tu solicitud ha sido aceptada.";
-                $sql_insert_mensaje = "INSERT INTO mensajes_temporales (id_solicitud, id_usuario, mensaje, fecha) VALUES (?, ?, ?, NOW(),0)";
+                $leido = 0;
+                $sql_insert_mensaje = "INSERT INTO mensajes_temporales (id_solicitud, id_usuario, mensaje, fecha, leido) VALUES (?, ?, ?, NOW(), ?)";
                 $stmt_insert = $conexion->prepare($sql_insert_mensaje);
 
                 if ($stmt_insert) {
-                    $stmt_insert->bind_param("iis", $id_solicitud, $id_usuario, $mensaje);
+                    $stmt_insert->bind_param("iisi", $id_solicitud, $id_usuario, $mensaje, $leido);
                     $stmt_insert->execute();
                     $stmt_insert->close();
 
-                    // ✅ Marcar al mototaxista como en servicio
+                    // Marcar al mototaxista como en servicio
                     $conexion->query("UPDATE mototaxistas_en_linea SET en_servicio = 1 WHERE id_usuario = $id_usuario");
 
                     $_SESSION['success_message'] = "Solicitud aceptada correctamente y notificación enviada al solicitante.";
@@ -96,9 +97,7 @@ header("Location: ../pages/sermototaxista.php");
     $_SESSION['error_message'] = "Error al preparar la consulta de selección: " . $conexion->error;
 }
 
-if ($conexion) {
-    $conexion->close();
-}
+$conexion->close();
 
 // Redirigir a la página de solicitudes
 header("Location: ../pages/sermototaxista.php");
