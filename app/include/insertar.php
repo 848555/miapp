@@ -51,7 +51,7 @@ $stmt->close();
 // Insertar nueva solicitud con pago_completo en 0
 $insertQuery = "INSERT INTO solicitudes (origen, destino, cantidad_personas, cantidad_motos, metodo_pago, estado, id_usuarios, costo_total, retencion_total, pago_completo) VALUES (?, ?, ?, ?, ?, 'pendiente', ?, ?, ?, 0)";
 $stmt_insert = $conexion->prepare($insertQuery);
-$stmt_insert->bind_param("sssisiidd", $origen, $destino, $cantidad_personas, $cantidad_motos, $metodo_pago, $id_usuario, $costo_total, $retencion_total);
+$stmt_insert->bind_param("ssiiisii", $origen, $destino, $cantidad_personas, $cantidad_motos, $metodo_pago, $id_usuario, $costo_total, $retencion_total);
 
 if ($stmt_insert->execute()) {
     $_SESSION['success_message'] = "Solicitud realizada con éxito. Costo total: $costo_total.";
