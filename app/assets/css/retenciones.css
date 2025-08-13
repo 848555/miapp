@@ -114,6 +114,7 @@ h2 {
   text-align: center;
   width: 100%;
   text-decoration: none;
+   margin-top: 10px;
 }
 .btn-regresar:hover{
   background: white;
