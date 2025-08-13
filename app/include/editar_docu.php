@@ -9,12 +9,19 @@ include(__DIR__ . '../../../config/conexion.php');
 // Configuración Supabase
 define('SUPABASE_URL', 'https://ccfwmhwwjbzhsdtqusrw.supabase.co');
 define('SUPABASE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZndtaHd3amJ6aHNkdHF1c3J3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mzg4ODExNiwiZXhwIjoyMDY5NDY0MTE2fQ.VL_ha2fmlgATu_ZRfknmXh_TkyDMhkWne4XojZ8qFWw'); // Service role key
+
 define('SUPABASE_STORAGE_BUCKET', 'documentos');
 
-function eliminarArchivoSupabase($filePath) {
-    if (!$filePath) return true; // nada que borrar
-    $filePath = str_replace(SUPABASE_URL . "/storage/v1/object/public/" . SUPABASE_STORAGE_BUCKET . "/", '', $filePath);
-    $url = SUPABASE_URL . "/storage/v1/object/" . SUPABASE_STORAGE_BUCKET . "/" . $filePath;
+function extraerPathInterno($urlPublica) {
+    if (!$urlPublica) return '';
+    $prefix = SUPABASE_URL . "/storage/v1/object/public/" . SUPABASE_STORAGE_BUCKET . "/";
+    return str_replace($prefix, '', $urlPublica);
+}
+
+function eliminarArchivoSupabase($urlPublica) {
+    $pathInterno = extraerPathInterno($urlPublica);
+    if (!$pathInterno) return true; // No hay archivo viejo
+    $url = SUPABASE_URL . "/storage/v1/object/" . SUPABASE_STORAGE_BUCKET . "/" . $pathInterno;
 
     $ch = curl_init($url);
     curl_setopt_array($ch, [
@@ -41,8 +48,7 @@ function subirArchivoASupabase($fileTmpPath, $fileName) {
         CURLOPT_POSTFIELDS => file_get_contents($fileTmpPath),
         CURLOPT_HTTPHEADER => [
             "Authorization: Bearer " . SUPABASE_KEY,
-            "Content-Type: application/octet-stream",
-            "x-upsert: true"
+            "Content-Type: application/octet-stream"
         ],
     ]);
     curl_exec($curl);
@@ -56,9 +62,10 @@ function obtenerUrlPublica($fileName) {
 }
 
 function nombreArchivoUnico($id, $tipo, $extension) {
-    return "{$id}_{$tipo}_" . date("Ymd_His") . ".{$extension}";
+    return "{$id}_{$tipo}_" . uniqid() . ".{$extension}";
 }
 
+// ====== Datos recibidos ======
 $placa  = $_POST["placa"] ?? "";
 $marca  = $_POST["marca"] ?? "";
 $modelo = $_POST["modelo"] ?? "";
@@ -69,6 +76,7 @@ if (empty($id_usuarios)) {
     die('Error: el id_usuarios no está definido.');
 }
 
+// ====== Obtener o crear registro ======
 $sql_check = "SELECT * FROM documentos WHERE id_usuarios = $id_usuarios LIMIT 1";
 $result = $conexion->query($sql_check);
 
@@ -94,6 +102,7 @@ $img_paths = [
     'tecno_mecanica' => $row['tecno_mecanica']
 ];
 
+// ====== Procesar cada archivo ======
 foreach ($img_paths as $campo => &$url_guardada) {
     if (isset($_FILES[$campo]) && $_FILES[$campo]["error"] === 0) {
         $ext = strtolower(pathinfo($_FILES[$campo]["name"], PATHINFO_EXTENSION));
@@ -115,6 +124,7 @@ foreach ($img_paths as $campo => &$url_guardada) {
     }
 }
 
+// ====== Actualizar DB ======
 $sql_update = "UPDATE documentos SET 
     licencia_de_conducir='{$img_paths['licencia_de_conducir']}', 
     tarjeta_de_propiedad='{$img_paths['tarjeta_de_propiedad']}', 
@@ -133,4 +143,7 @@ if ($conexion->query($sql_update)) {
 } else {
     echo "Error al actualizar la base de datos: " . $conexion->error;
 }
+
 ?>
+
+
