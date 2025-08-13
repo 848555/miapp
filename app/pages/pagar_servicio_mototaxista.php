@@ -69,9 +69,11 @@ $resultado = $stmt->get_result();
         </div>
         <?php unset($_SESSION['mensaje']); ?>
     <?php endif; ?>
-   <a href="/app/pages/inicio.php" class="btn btn-success">Regresar</a>
 </div>
-
+<!-- Botón que siempre se muestra -->
+<div class="botones-container mt-4">
+    <a href="/app/pages/inicio.php" class="btn btn-success">Regresar</a>
+</div>
 <!-- Ícono de accesibilidad -->
 <div id="accessibility-icon">
     <ion-icon name="accessibility-outline"></ion-icon>
