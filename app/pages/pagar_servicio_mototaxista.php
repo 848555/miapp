@@ -63,7 +63,7 @@ $resultado = $stmt->get_result();
         </div>
     <?php endif; ?>
   <!-- Botón regresar dentro del container -->
-    <div class="mt-4" style="width: 100%; max-width: 600px;">
+    <div class="mt-4">
         <a href="/app/pages/inicio.php" class="btn-regresar">Regresar</a>
     </div>
     <?php if (isset($_SESSION['mensaje'])): ?>
