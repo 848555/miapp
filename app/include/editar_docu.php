@@ -7,7 +7,7 @@ include(__DIR__ . '../../../config/conexion.php');
 
 // Configuración Supabase
 define('SUPABASE_URL', 'https://ccfwmhwwjbzhsdtqusrw.supabase.co');
-define('SUPABASE_KEY', 'TU_SERVICE_ROLE_KEY'); 
+define('SUPABASE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZndtaHd3amJ6aHNkdHF1c3J3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mzg4ODExNiwiZXhwIjoyMDY5NDY0MTE2fQ.VL_ha2fmlgATu_ZRfknmXh_TkyDMhkWne4XojZ8qFWw'); // Service role key
 define('SUPABASE_STORAGE_BUCKET', 'documentos');
 
 function extraerPathInterno($urlPublica) {
@@ -74,27 +74,27 @@ if (empty($id_usuarios)) {
     die('Error: el id_usuarios no está definido.');
 }
 
-// ====== Obtener o crear registro ======
-$sql_check = "SELECT * FROM documentos WHERE id_usuarios = $id_usuarios LIMIT 1";
+// ====== Obtener registro existente ======
+$sql_check = "SELECT * FROM documentos WHERE id_usuarios = " . intval($id_usuarios) . " LIMIT 1";
 $result = $conexion->query($sql_check);
 
 if ($result && $result->num_rows > 0) {
     $row = $result->fetch_assoc();
-    $last_id = $row['id_documentos'];
 } else {
+    // Insertar nuevo registro si no existe
     $sql = "INSERT INTO documentos (placa, marca, modelo, color, id_usuarios) 
-            VALUES ('$placa', '$marca', '$modelo', '$color', '$id_usuarios')";
-    if ($conexion->query($sql) === TRUE) {
-        $last_id = $conexion->insert_id;
-        $row = ['licencia_de_conducir' => "", 'tarjeta_de_propiedad' => "", 'soat' => "", 'tecno_mecanica' => ""];
-    } else {
+            VALUES ('" . $conexion->real_escape_string($placa) . "', '" . $conexion->real_escape_string($marca) . "', '" . $conexion->real_escape_string($modelo) . "', '" . $conexion->real_escape_string($color) . "', " . intval($id_usuarios) . ")";
+    if (!$conexion->query($sql)) {
         die("Error: " . $conexion->error);
     }
+    // Obtener el nuevo registro
+    $result = $conexion->query($sql_check);
+    $row = $result->fetch_assoc();
 }
 
 $allowed_types = ['jpg', 'jpeg', 'png'];
 
-// Aquí usamos los nombres que envía el formulario (según el HTML que diste)
+// Tomamos las rutas guardadas actuales, o de los inputs ocultos si vienen
 $img_paths = [
     'licencia_de_conducir' => $_POST['licencia_actual'] ?? $row['licencia_de_conducir'],
     'tarjeta_de_propiedad' => $_POST['tarjeta_actual'] ?? $row['tarjeta_de_propiedad'],
@@ -102,7 +102,7 @@ $img_paths = [
     'tecno_mecanica' => $_POST['tecno_actual'] ?? $row['tecno_mecanica']
 ];
 
-// ====== Subida ======
+// ====== Subida de archivos ======
 foreach ($img_paths as $campo => &$url_guardada) {
     if (isset($_FILES[$campo]) && $_FILES[$campo]["error"] === 0) {
         $ext = strtolower(pathinfo($_FILES[$campo]["name"], PATHINFO_EXTENSION));
@@ -110,12 +110,12 @@ foreach ($img_paths as $campo => &$url_guardada) {
             die("Archivo $campo inválido.");
         }
 
-        // Eliminar archivo anterior en Supabase solo si hay URL previa
+        // Eliminar archivo anterior en Supabase
         if (!empty($url_guardada)) {
             eliminarArchivoSupabase($url_guardada);
         }
 
-        $nombre_nuevo = nombreArchivoUnico($last_id, $campo, $ext);
+        $nombre_nuevo = nombreArchivoUnico($id_usuarios, $campo, $ext);
         if (!subirArchivoASupabase($_FILES[$campo]["tmp_name"], $nombre_nuevo)) {
             die("Error al subir $campo.");
         }
@@ -125,7 +125,7 @@ foreach ($img_paths as $campo => &$url_guardada) {
 }
 unset($url_guardada); // Romper referencia
 
-// ====== Guardar en BD ======
+// ====== Actualizar BD usando id_usuarios ======
 $sql_update = "UPDATE documentos SET 
     licencia_de_conducir='" . $conexion->real_escape_string($img_paths['licencia_de_conducir']) . "', 
     tarjeta_de_propiedad='" . $conexion->real_escape_string($img_paths['tarjeta_de_propiedad']) . "', 
@@ -135,7 +135,7 @@ $sql_update = "UPDATE documentos SET
     marca='" . $conexion->real_escape_string($marca) . "', 
     modelo='" . $conexion->real_escape_string($modelo) . "', 
     color='" . $conexion->real_escape_string($color) . "'
-    WHERE id_documentos=$last_id";
+    WHERE id_usuarios = " . intval($id_usuarios);
 
 if ($conexion->query($sql_update)) {
     $_SESSION['mensaje'] = "Documentos actualizados correctamente.";
