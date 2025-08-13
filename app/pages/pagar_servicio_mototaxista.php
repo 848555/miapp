@@ -62,7 +62,10 @@ $resultado = $stmt->get_result();
             No tienes pagos pendientes al mototaxista.
         </div>
     <?php endif; ?>
-
+  <!-- Botón regresar dentro del container -->
+    <div class="mt-4" style="width: 100%; max-width: 600px;">
+        <a href="/app/pages/inicio.php" class="btn-regresar">Regresar</a>
+    </div>
     <?php if (isset($_SESSION['mensaje'])): ?>
         <div class="alert alert-warning mt-4 text-center">
             <?= $_SESSION['mensaje']; ?>
@@ -70,8 +73,7 @@ $resultado = $stmt->get_result();
         <?php unset($_SESSION['mensaje']); ?>
     <?php endif; ?>
 </div>
-<!-- Botón que siempre se muestra -->
- <a href="/app/pages/inicio.php" class="btn btn-regresar">Regresar</a>
+
 
 <!-- Ícono de accesibilidad -->
 <div id="accessibility-icon">
