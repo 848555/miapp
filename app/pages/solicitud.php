@@ -86,7 +86,7 @@ $solicitudes_pendientes = $result->fetch_all(MYSQLI_ASSOC);
         <label for="pago">Método de pago:</label>
         <select name="pago" id="pago" required>
             <option value="efectivo">Efectivo</option>
-            <option value="tarjeta">Nequi</option>
+            <option value="nequi">Nequi</option>
         </select>
         <a href="/app/pages/inicio.php">Regresar</a>
         <button>Solicitar Mototaxi</button>
