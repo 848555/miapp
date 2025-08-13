@@ -16,7 +16,14 @@ $origen = trim($_POST['origen']);
 $destino = trim($_POST['destino']);
 $cantidad_personas = intval($_POST['personas']);
 $cantidad_motos = intval($_POST['cantidad']);
-$metodo_pago = trim($_POST['pago']);
+$metodo_pago = strtolower(trim($_POST['pago'])); // ← CORRECCIÓN: normalizar y evitar errores con ENUM
+
+// Validar método de pago permitido
+if (!in_array($metodo_pago, ['efectivo', 'nequi'])) {
+    $_SESSION['error_message'] = "Método de pago no válido.";
+    header("Location: ../../../../app/pages/solicitud.php");
+    exit();
+}
 
 // Definir la tarifa y la retención
 $tarifa = 4000;
