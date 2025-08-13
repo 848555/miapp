@@ -72,7 +72,7 @@ $resultado = $stmt->get_result();
 </div>
 <!-- Botón que siempre se muestra -->
 <div class="botones-container mt-4">
-    <a href="/app/pages/inicio.php" class="btn btn-success">Regresar</a>
+    <a href="/app/pages/inicio.php" class="btn btn-regresar">Regresar</a>
 </div>
 <!-- Ícono de accesibilidad -->
 <div id="accessibility-icon">
