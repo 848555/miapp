@@ -12,8 +12,9 @@ define('SUPABASE_URL', 'https://ccfwmhwwjbzhsdtqusrw.supabase.co');
 define('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZndtaHd3amJ6aHNkdHF1c3J3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mzg4ODExNiwiZXhwIjoyMDY5NDY0MTE2fQ.VL_ha2fmlgATu_ZRfknmXh_TkyDMhkWne4XojZ8qFWw');
 define('SUPABASE_STORAGE_BUCKET', 'documentos');
 
-// Función para subir archivo a Supabase Storage
+// Función para subir archivo
 function subirArchivoASupabase($fileTmpPath, $fileName) {
+    echo "<pre>📤 Subiendo: $fileName</pre>";
     $url = SUPABASE_URL . "/storage/v1/object/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName . "?upsert=true";
 
     $curl = curl_init();
@@ -33,16 +34,19 @@ function subirArchivoASupabase($fileTmpPath, $fileName) {
     $err = curl_error($curl);
     curl_close($curl);
 
+    echo "<pre>PUT HTTP code: $http_code</pre>";
+    echo "<pre>PUT Response: " . htmlspecialchars($response) . "</pre>";
+
     if ($err) {
-        error_log("cURL Error: " . $err);
+        echo "<pre>❌ cURL Error: $err</pre>";
         return false;
     }
-
     return ($http_code >= 200 && $http_code < 300);
 }
 
-// Función para eliminar archivo en Supabase
+// Función para eliminar archivo
 function eliminarArchivoSupabase($fileName) {
+    echo "<pre>🗑 Eliminando: $fileName</pre>";
     $url = SUPABASE_URL . "/storage/v1/object/" . SUPABASE_STORAGE_BUCKET . "/" . $fileName;
 
     $curl = curl_init();
@@ -60,11 +64,13 @@ function eliminarArchivoSupabase($fileName) {
     $err = curl_error($curl);
     curl_close($curl);
 
+    echo "<pre>DELETE HTTP code: $http_code</pre>";
+    echo "<pre>DELETE Response: " . htmlspecialchars($response) . "</pre>";
+
     if ($err) {
-        error_log("Error al eliminar archivo: " . $err);
+        echo "<pre>❌ Error al eliminar archivo: $err</pre>";
         return false;
     }
-
     return ($http_code >= 200 && $http_code < 300);
 }
 
@@ -74,23 +80,22 @@ function obtenerUrlPublica($fileName) {
 }
 
 // Nombre de archivo fijo
-function nombreArchivoFijo($id, $tipo, $ext) {
-    return "{$id}_{$tipo}." . $ext;
+function nombreArchivoFijo($id, $tipo, $extension) {
+    return "{$id}_{$tipo}.{$extension}";
 }
 
-// Recoger datos del formulario
+// Datos formulario
 $placa  = $_POST["placa"] ?? "";
 $marca  = $_POST["marca"] ?? "";
 $modelo = $_POST["modelo"] ?? "";
 $color  = $_POST["color"] ?? "";
-
 $id_usuarios = $_SESSION['id_usuario'] ?? "";
+
 if (empty($id_usuarios)) {
     die('Error: el id_usuarios no está definido.');
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Verificar si ya existe registro
     $sql_check = "SELECT * FROM documentos WHERE id_usuarios = $id_usuarios LIMIT 1";
     $result = $conexion->query($sql_check);
 
@@ -98,145 +103,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $row = $result->fetch_assoc();
         $last_id = $row['id_documentos'];
     } else {
-        // Crear nuevo registro
         $sql = "INSERT INTO documentos (placa, marca, modelo, color, id_usuarios) 
                 VALUES ('$placa', '$marca', '$modelo', '$color', '$id_usuarios')";
         if ($conexion->query($sql) === TRUE) {
             $last_id = $conexion->insert_id;
-            $row = [
-                'licencia_de_conducir' => "",
-                'tarjeta_de_propiedad' => "",
-                'soat' => "",
-                'tecno_mecanica' => ""
-            ];
+            $row = ['licencia_de_conducir' => "", 'tarjeta_de_propiedad' => "", 'soat' => "", 'tecno_mecanica' => ""];
         } else {
-            echo "Error: " . $conexion->error;
-            exit();
+            die("Error: " . $conexion->error);
         }
     }
 
     $allowed_types = ['jpg', 'jpeg', 'png'];
 
-    // === LICENCIA ===
-    if (isset($_FILES["licencia_de_conducir"]) && $_FILES["licencia_de_conducir"]["error"] === 0) {
-        $ext = strtolower(pathinfo($_FILES["licencia_de_conducir"]["name"], PATHINFO_EXTENSION));
-        if (!in_array($ext, $allowed_types) || getimagesize($_FILES["licencia_de_conducir"]["tmp_name"]) === false) {
-            $_SESSION['error_archivo'] = "Archivo licencia inválido.";
-            exit();
+    // Función para procesar cada archivo
+    function procesarArchivo($campo, $tipo, &$url_guardada, $row, $last_id, $allowed_types) {
+        if (isset($_FILES[$campo]) && $_FILES[$campo]["error"] === 0) {
+            $ext = strtolower(pathinfo($_FILES[$campo]["name"], PATHINFO_EXTENSION));
+            if (!in_array($ext, $allowed_types) || getimagesize($_FILES[$campo]["tmp_name"]) === false) {
+                die("Archivo $tipo inválido.");
+            }
+            // Eliminar anterior si existe
+            if (!empty($row[$campo])) {
+                $nombre_anterior = basename(parse_url($row[$campo], PHP_URL_PATH));
+                eliminarArchivoSupabase($nombre_anterior);
+            }
+            // Subir nuevo
+            $nombre_nuevo = nombreArchivoFijo($last_id, $tipo, $ext);
+            if (!subirArchivoASupabase($_FILES[$campo]["tmp_name"], $nombre_nuevo)) {
+                die("Error al subir $tipo.");
+            }
+            $url_guardada = obtenerUrlPublica($nombre_nuevo) . "?t=" . time();
+        } else {
+            $url_guardada = $row[$campo];
         }
-        $nombre_base = nombreArchivoFijo($last_id, "licencia", $ext);
-
-        if (!empty($row['licencia_de_conducir'])) {
-            $nombre_antiguo = basename(parse_url($row['licencia_de_conducir'], PHP_URL_PATH));
-            eliminarArchivoSupabase($nombre_antiguo);
-        }
-
-        if (!subirArchivoASupabase($_FILES["licencia_de_conducir"]["tmp_name"], $nombre_base)) {
-            die("Error al subir la licencia.");
-        }
-        $licencia_de_conducir_url = obtenerUrlPublica($nombre_base) . "?t=" . time();
-    } else {
-        $licencia_de_conducir_url = $row['licencia_de_conducir'];
     }
 
-    // === TARJETA ===
-    if (isset($_FILES["tarjeta_de_propiedad"]) && $_FILES["tarjeta_de_propiedad"]["error"] === 0) {
-        $ext = strtolower(pathinfo($_FILES["tarjeta_de_propiedad"]["name"], PATHINFO_EXTENSION));
-        if (!in_array($ext, $allowed_types) || getimagesize($_FILES["tarjeta_de_propiedad"]["tmp_name"]) === false) {
-            $_SESSION['error_archivo'] = "Archivo tarjeta inválido.";
-            exit();
-        }
-        $nombre_base = nombreArchivoFijo($last_id, "tarjeta", $ext);
+    // Procesar cada documento
+    procesarArchivo("licencia_de_conducir", "licencia", $licencia_de_conducir_url, $row, $last_id, $allowed_types);
+    procesarArchivo("tarjeta_de_propiedad", "tarjeta", $tarjeta_de_propiedad_url, $row, $last_id, $allowed_types);
+    procesarArchivo("soat", "soat", $soat_url, $row, $last_id, $allowed_types);
+    procesarArchivo("tecno_mecanica", "tecno", $tecno_mecanica_url, $row, $last_id, $allowed_types);
 
-        if (!empty($row['tarjeta_de_propiedad'])) {
-            $nombre_antiguo = basename(parse_url($row['tarjeta_de_propiedad'], PHP_URL_PATH));
-            eliminarArchivoSupabase($nombre_antiguo);
-        }
-
-        if (!subirArchivoASupabase($_FILES["tarjeta_de_propiedad"]["tmp_name"], $nombre_base)) {
-            die("Error al subir la tarjeta.");
-        }
-        $tarjeta_de_propiedad_url = obtenerUrlPublica($nombre_base) . "?t=" . time();
-    } else {
-        $tarjeta_de_propiedad_url = $row['tarjeta_de_propiedad'];
-    }
-
-    // === SOAT ===
-    if (isset($_FILES["soat"]) && $_FILES["soat"]["error"] === 0) {
-        $ext = strtolower(pathinfo($_FILES["soat"]["name"], PATHINFO_EXTENSION));
-        if (!in_array($ext, $allowed_types) || getimagesize($_FILES["soat"]["tmp_name"]) === false) {
-            $_SESSION['error_archivo'] = "Archivo SOAT inválido.";
-            exit();
-        }
-        $nombre_base = nombreArchivoFijo($last_id, "soat", $ext);
-
-        if (!empty($row['soat'])) {
-            $nombre_antiguo = basename(parse_url($row['soat'], PHP_URL_PATH));
-            eliminarArchivoSupabase($nombre_antiguo);
-        }
-
-        if (!subirArchivoASupabase($_FILES["soat"]["tmp_name"], $nombre_base)) {
-            die("Error al subir el SOAT.");
-        }
-        $soat_url = obtenerUrlPublica($nombre_base) . "?t=" . time();
-    } else {
-        $soat_url = $row['soat'];
-    }
-
-    // === TECNOMECÁNICA ===
-    if (isset($_FILES["tecno_mecanica"]) && $_FILES["tecno_mecanica"]["error"] === 0) {
-        $ext = strtolower(pathinfo($_FILES["tecno_mecanica"]["name"], PATHINFO_EXTENSION));
-        if (!in_array($ext, $allowed_types) || getimagesize($_FILES["tecno_mecanica"]["tmp_name"]) === false) {
-            $_SESSION['error_archivo'] = "Archivo tecnomecánica inválido.";
-            exit();
-        }
-        $nombre_base = nombreArchivoFijo($last_id, "tecno", $ext);
-
-        if (!empty($row['tecno_mecanica'])) {
-            $nombre_antiguo = basename(parse_url($row['tecno_mecanica'], PHP_URL_PATH));
-            eliminarArchivoSupabase($nombre_antiguo);
-        }
-
-        if (!subirArchivoASupabase($_FILES["tecno_mecanica"]["tmp_name"], $nombre_base)) {
-            die("Error al subir la tecnomecánica.");
-        }
-        $tecno_mecanica_url = obtenerUrlPublica($nombre_base) . "?t=" . time();
-    } else {
-        $tecno_mecanica_url = $row['tecno_mecanica'];
-    }
-
-    // === Actualizar DB ===
-    $sql_update = "UPDATE documentos SET 
-                    placa = ?, 
-                    marca = ?, 
-                    modelo = ?, 
-                    color = ?, 
-                    licencia_de_conducir = ?, 
-                    tarjeta_de_propiedad = ?, 
-                    soat = ?, 
-                    tecno_mecanica = ?
-                   WHERE id_documentos = ?";
-
+    // Guardar en BD
+    $sql_update = "UPDATE documentos SET placa=?, marca=?, modelo=?, color=?, licencia_de_conducir=?, tarjeta_de_propiedad=?, soat=?, tecno_mecanica=? WHERE id_documentos=?";
     $stmt = $conexion->prepare($sql_update);
-    $stmt->bind_param("ssssssssi", 
-        $placa, 
-        $marca, 
-        $modelo, 
-        $color, 
-        $licencia_de_conducir_url, 
-        $tarjeta_de_propiedad_url, 
-        $soat_url, 
-        $tecno_mecanica_url, 
-        $last_id
-    );
+    $stmt->bind_param("ssssssssi", $placa, $marca, $modelo, $color, $licencia_de_conducir_url, $tarjeta_de_propiedad_url, $soat_url, $tecno_mecanica_url, $last_id);
 
     if ($stmt->execute()) {
-        $_SESSION['success_message'] = "<p style='color: green;'>Documentos actualizados correctamente.</p>";
-        header("Location: ../pages/sermototaxista.php");
-        exit();
+        echo "<pre>✅ Documentos actualizados correctamente.</pre>";
     } else {
-        echo "Error al actualizar documentos: " . $stmt->error;
-        exit();
+        echo "<pre>❌ Error al actualizar documentos: {$stmt->error}</pre>";
     }
 }
 ?>
