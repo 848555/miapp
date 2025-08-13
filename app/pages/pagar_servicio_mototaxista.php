@@ -62,6 +62,7 @@ $resultado = $stmt->get_result();
             No tienes pagos pendientes al mototaxista.
         </div>
     <?php endif; ?>
+<br></br>
   <!-- Botón regresar dentro del container -->
     <div class="mt-4">
         <a href="/app/pages/inicio.php" class="btn-regresar">Regresar</a>
