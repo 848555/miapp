@@ -54,7 +54,7 @@ $resultado = $stmt->get_result();
 
             <div class="botones-container mt-4">
                 <button type="submit" class="btn btn-success">Pagar</button>
-                <a href="/app/pages/inicio.php" class="btn btn-success">Regresar</a>
+             
             </div>
         </form>
     <?php else: ?>
@@ -69,6 +69,7 @@ $resultado = $stmt->get_result();
         </div>
         <?php unset($_SESSION['mensaje']); ?>
     <?php endif; ?>
+   <a href="/app/pages/inicio.php" class="btn btn-success">Regresar</a>
 </div>
 
 <!-- Ícono de accesibilidad -->
