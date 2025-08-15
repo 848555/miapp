@@ -30,7 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $_SESSION['error_message'] = "Error al registrar la acción";
     }
-
+// Cerrar la consulta y la conexión
+$sql->close();
+$conexion->close();
     header("Location: ../pages/principal.php");
     exit();
 } else {
