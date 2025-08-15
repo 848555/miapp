@@ -66,9 +66,10 @@ if ($check_result->num_rows > 0) {
     header("Location: ../pages/principal.php");
     exit();
 }
+// 🔹 Encriptar la contraseña antes de insertar
+$contraseñaHash = password_hash($contraseña, PASSWORD_DEFAULT);
 
 $sql = $conexion->prepare("INSERT INTO usuarios (Nombres, Apellidos, DNI, fecha_de_nacimiento, telefono, Departamento, Ciudad, Direccion, Usuario, Password, Estado, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
 if ($sql) {
     $sql->bind_param("ssssssssssss", $nombres, $apellidos, $dni, $fecha, $telefono, $departamento, $ciudad, $direccion, $usuario, $contraseña, $estado, $rol);
     if ($sql->execute()) {
