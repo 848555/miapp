@@ -2,14 +2,12 @@
 // Iniciar la sesión
 session_start();
 
-// Verificar si el usuario está autenticado
-$validar = $_SESSION['usuario'];
-
-// Si el usuario no está autenticado, redirigir al formulario de inicio de sesión
-if ($validar == null || $validar == '') {
-    header("Location:../login/login.php");
-    die();
+// Verificar si 'usuario' está definido en la sesión
+if (!isset($_SESSION['usuario']) || $_SESSION['usuario'] === '') {
+    header("Location: ../../../../index.php");
+    exit;
 }
+
 include(__DIR__ . '../../../config/conexion.php');
 
 // Preparar consulta SQL para obtener retenciones agrupadas por usuario
