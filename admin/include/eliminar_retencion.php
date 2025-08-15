@@ -33,6 +33,7 @@ if (isset($_GET['id'])) {
 } else {
     $_SESSION['mensaje'] = "ID de retención no proporcionado.";
 }
+$conexion->close();
 
 // Redirigir a la página de retenciones
 header("Location: ../pages/ver_retenciones.php");
