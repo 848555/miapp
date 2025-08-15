@@ -83,7 +83,7 @@ if (isset($_GET['id_admin'])) {
   <div class="container-fluid">
     <a class="navbar-brand" href="/admin/pages/principal.php">
       <img src="/app/assets/imagenes/imagen.jpeg" alt="Logo" width="30" height="30">
-      ADMIN PANEL
+      MotoRide
     </a>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
