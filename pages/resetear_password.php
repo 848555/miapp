@@ -21,10 +21,11 @@ if ($token) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['nueva_contrasena'])) {
             $nueva_contrasena = trim($_POST['nueva_contrasena']);
 
-            // Actualizar contraseña del usuario sin encriptar
-            $stmt_update = $conexion->prepare("UPDATE usuarios SET password = ? WHERE telefono = ?");
-            $stmt_update->bind_param("ss", $nueva_contrasena, $telefono);
-            $stmt_update->execute();
+           // Encriptar la nueva contraseña antes de actualizarla
+$nueva_contrasena_hashed = password_hash($nueva_contrasena, PASSWORD_DEFAULT);
+$stmt_update = $conexion->prepare("UPDATE usuarios SET password = ? WHERE telefono = ?");
+$stmt_update->bind_param("ss", $nueva_contrasena_hashed, $telefono);
+$stmt_update->execute();
 
             // Eliminar el token
             $stmt_delete = $conexion->prepare("DELETE FROM recuperacion_password WHERE token = ?");
