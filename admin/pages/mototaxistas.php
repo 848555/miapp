@@ -66,7 +66,7 @@ $supabase_url = "https://ccfwmhwwjbzhsdtqusrw.supabase.co/storage/v1/object/publ
         <div class="container-fluid">
             <a class="navbar-brand" href="/admin/pages/principal.php">
                 <img src="/app/assets/imagenes/imagen.jpeg" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
-              ADMIN PANEL
+             MotoRide
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
