@@ -1,7 +1,5 @@
 <?php
 session_start();
-<?php
-session_start();
 // Verificar si 'usuario' está definido en la sesión
 if (!isset($_SESSION['usuario']) || $_SESSION['usuario'] === '') {
     header("Location: ../../../../index.php");
