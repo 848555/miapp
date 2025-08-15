@@ -71,7 +71,7 @@ $sql_acciones = "SELECT id_usuarios FROM usuarios";
   <div class="container-fluid">
     <a class="navbar-brand" href="/admin/pages/principal.php">
       <img src="/app/assets/imagenes/imagen.jpeg" alt="Logo" width="30" height="30">
-      ADMIN PANEL
+    MotoRide
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
