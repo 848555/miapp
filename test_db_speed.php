@@ -2,7 +2,7 @@
 $start_global = microtime(true);
 
 $start_conexion = microtime(true);
-   include(__DIR__ . '../../../config/conexion.php');
+   include(__DIR__ . '../../config/conexion.php');
 $end_conexion = microtime(true);
 
 $start_query = microtime(true);
