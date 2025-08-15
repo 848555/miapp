@@ -67,6 +67,9 @@ if ($check_result->num_rows > 0) {
 $estado = 'Activo';
 $rol = '2';
 
+// Encriptar la contraseña
+$contraseñaHash = password_hash($contraseña, PASSWORD_DEFAULT);
+
 // Preparar la consulta SQL para insertar
 $sql = $conexion->prepare("INSERT INTO usuarios (Nombres, Apellidos, DNI, fecha_de_nacimiento, telefono, Departamento, Ciudad, Direccion, Usuario, Password, Estado, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
