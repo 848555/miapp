@@ -19,8 +19,10 @@ if (isset($_GET['departamento'])) {
 
     // Devolver las ciudades en formato JSON
     echo json_encode($ciudades);
+    $conexion->close(); // 🔹 Cerrar la conexión
 } else {
     // Si no se recibió el parámetro correcto, devolver un error o mensaje adecuado
     echo json_encode(array('error' => 'Parámetro departamento no recibido.'));
+    $conexion->close(); // 🔹 Cerrar la conexión
 }
 ?>
