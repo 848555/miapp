@@ -1,5 +1,10 @@
 <?php
 session_start();
+// Verificar si 'usuario' está definido en la sesión
+if (!isset($_SESSION['usuario']) || $_SESSION['usuario'] === '') {
+    header("Location: ../../../../index.php");
+    exit;
+}
 include(__DIR__ . '../../../config/conexion.php');
 include(__DIR__ . '/../include/validar_permiso_directo.php'); // Ruta según tu estructura
 
