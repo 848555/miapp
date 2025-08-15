@@ -32,6 +32,8 @@ if (isset($_GET['id'])) {
     $_SESSION['error_message'] = "ID de usuario no proporcionado.";
 }
 
+$conexion->close();
+
 // Redirigir a la página anterior
 header("Location: " . $_SERVER['HTTP_REFERER']);
 exit();
