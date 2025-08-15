@@ -80,7 +80,7 @@ if ($sql) {
 } else {
     $_SESSION['error_message'] = "Error al preparar la consulta: " . $conexion->error;
 }
-
+$conexion->close(); // 🔹 cerrar la conexión explícitamente
 header("Location: ../pages/principal.php");
 exit();
 ?>
