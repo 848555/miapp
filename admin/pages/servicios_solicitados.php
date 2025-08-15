@@ -6,7 +6,6 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario'] === '') {
     exit;
 }
 include(__DIR__ . '../../../config/conexion.php');
-include(__DIR__ . '../../../config/conexion.php');
 
 // Respuesta AJAX para actualizar solo la tabla sin recargar
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'tabla') {
