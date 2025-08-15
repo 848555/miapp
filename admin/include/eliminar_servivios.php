@@ -68,6 +68,7 @@ if (isset($_GET['id_solicitud'])) {
 } else {
     $_SESSION['error_message'] = '<div class="alert alert-danger" role="alert">No se recibió el parámetro "id_solicitud" para eliminar la solicitud.</div>';
 }
+$conexion->close();
 
 // Redireccionar a la página servicios_solicitados.php con el mensaje almacenado en la sesión
 header("Location: ../pages/servicios_solicitados.php");
