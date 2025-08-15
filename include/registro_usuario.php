@@ -1,95 +1,66 @@
-<?php
-session_start();
+<<?php
 include(__DIR__ . '../../config/conexion.php');
 
-// Asegúrate de que las variables POST estén definidas
-$nombres = isset($_POST["nombres"]) ? $_POST["nombres"] : '';
-$apellidos = isset($_POST["apellidos"]) ? $_POST["apellidos"] : '';
-$dni = isset($_POST["dni"]) ? $_POST["dni"] : '';
-$fecha = isset($_POST["fecha"]) ? $_POST["fecha"] : '';
-$telefono = isset($_POST["telefono"]) ? $_POST["telefono"] : '';
-$departamento = isset($_POST["departamento"]) ? $_POST["departamento"] : '';
-$ciudad = isset($_POST["ciudad"]) ? $_POST["ciudad"] : '';
-$direccion = isset($_POST["direccion"]) ? $_POST["direccion"] : '';
-$usuario = isset($_POST["usuario"]) ? $_POST["usuario"] : '';
-$contraseña = isset($_POST["contraseña"]) ? $_POST["contraseña"] : '';
+// Iniciar la sesión
+session_start();
 
-// Verificar si todos los campos están llenos
-if (empty($nombres) || empty($apellidos) || empty($dni) || empty($fecha) || empty($telefono) || empty($departamento) || empty($ciudad) || empty($direccion) || empty($usuario) || empty($contraseña)) {
-    $_SESSION['error'] = "Error: Todos los campos son obligatorios.";
-    header("Location: ../index.php");
-    exit();
-}
+if (isset($_POST['usuario']) && isset($_POST['password'])) {
+    $usuario = $_POST['usuario'];
+    $password = $_POST['password'];
 
-// Validar el número de teléfono (debe tener exactamente 10 dígitos)
-if (!preg_match('/^\d{10}$/', $telefono)) {
-    $_SESSION['error'] = "Error: El número de teléfono debe tener exactamente 10 dígitos.";
-    header("Location: ../index.php");
-    exit();
-}
+    // 🔹 Buscar solo por usuario para obtener el hash
+    $consulta = "SELECT * FROM usuarios WHERE Usuario=?";
+    $stmt = mysqli_prepare($conexion, $consulta);
 
-// Validar que la fecha indique que la persona es mayor de edad (18 años o más)
-$fecha_actual = new DateTime();
-$fecha_nacimiento = DateTime::createFromFormat('Y-m-d', $fecha);
-$edad = $fecha_nacimiento->diff($fecha_actual)->y;
-
-if ($edad < 18) {
-    $_SESSION['error'] = "Error: Debes ser mayor de edad para registrarte.";
-    header("Location: ../index.php");
-    exit();
-}
-
-// Verificar duplicados
-$check_sql = $conexion->prepare("SELECT * FROM usuarios WHERE DNI = ? OR telefono = ? OR Usuario = ?");
-$check_sql->bind_param("sss", $dni, $telefono, $usuario);
-$check_sql->execute();
-$check_result = $check_sql->get_result();
-
-if ($check_result->num_rows > 0) {
-    $duplicated_fields = [];
-    while ($row = $check_result->fetch_assoc()) {
-        if ($row['DNI'] == $dni && !in_array("DNI", $duplicated_fields)) {
-            $duplicated_fields[] = "DNI";
-        }
-        if ($row['telefono'] == $telefono && !in_array("teléfono", $duplicated_fields)) {
-            $duplicated_fields[] = "teléfono";
-        }
-        if ($row['Usuario'] == $usuario && !in_array("usuario", $duplicated_fields)) {
-            $duplicated_fields[] = "usuario";
-        }
+    if (!$stmt) {
+        die("Error en la preparación de la consulta: " . mysqli_error($conexion));
     }
-    $_SESSION['error'] = "Error: Los siguientes campos ya están registrados: " . implode(', ', $duplicated_fields) . ".";
-    header("Location: ../index.php");
-    exit();
-}
 
-// Estado y rol fijo
-$estado = 'Activo';
-$rol = '2';
+    mysqli_stmt_bind_param($stmt, "s", $usuario);
+    mysqli_stmt_execute($stmt);
+    $resultado = mysqli_stmt_get_result($stmt);
 
-// Encriptar la contraseña
-$contraseñaHash = password_hash($contraseña, PASSWORD_DEFAULT);
+    if (!$resultado) {
+        die("Error en la ejecución de la consulta: " . mysqli_error($conexion));
+    }
 
-// Preparar la consulta SQL para insertar
-$sql = $conexion->prepare("INSERT INTO usuarios (Nombres, Apellidos, DNI, fecha_de_nacimiento, telefono, Departamento, Ciudad, Direccion, Usuario, Password, Estado, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $filas = mysqli_fetch_array($resultado);
 
-if ($sql) {
-    $sql->bind_param("ssssssssssss", $nombres, $apellidos, $dni, $fecha, $telefono, $departamento, $ciudad, $direccion, $usuario, $contraseña, $estado, $rol);
-    if ($sql->execute()) {
-        $_SESSION['mensaje'] = "Te registraste correctamente, Inicia sesión.";
-        header("Location: ../index.php");
-        exit();
+    // 🔹 Verificar que exista el usuario y validar la contraseña encriptada
+    if ($filas && password_verify($password, $filas['Password'])) {
+        $estado_usuario = trim($filas['Estado']);
+
+        if (strcasecmp($estado_usuario, 'Sancionado') == 0) {
+            $_SESSION['error'] = "El usuario está sancionado y no puede iniciar sesión.";
+            header('Location: ../index.php');
+            exit();
+        } elseif (strcasecmp($estado_usuario, 'Inactivo') == 0) {
+            $_SESSION['error'] = "El usuario está inactivo y no puede iniciar sesión.";
+            header('Location: ../index.php');
+            exit();
+        }
+
+        // ✅ Asignar variables de sesión
+        $_SESSION['usuario'] = $usuario;
+        $_SESSION['id_usuario'] = $filas['id_usuarios'];
+        $_SESSION['rol'] = $filas['rol'];
+
+        // ✅ Redirección según el rol
+        if ($filas['rol'] == 1) {
+            header('Location: ../../../../admin/pages/principal.php');
+            exit();
+        } elseif ($filas['rol'] == 2) {
+            $_SESSION['mensaje'] = "¡Inicio de sesión exitoso!";
+            header('Location: ../../../../app/pages/inicio.php');
+            exit();
+        }
     } else {
-        $_SESSION['error'] = "Error al ejecutar la consulta: " . $sql->error;
-        header("Location: ../index.php");
+        $_SESSION['error'] = "Error: El usuario o la contraseña son incorrectos, por favor verifica e intenta de nuevo.";
+        header('Location: ../index.php');
         exit();
     }
 } else {
-    $_SESSION['error'] = "Error al preparar la consulta: " . $conexion->error;
     header("Location: ../index.php");
     exit();
 }
-
-// Cerrar la conexión
-$conexion->close();
 ?>
