@@ -59,7 +59,12 @@ if ($resultado_select->num_rows > 0) {
     if ($ciudad !== $fila['Ciudad']) $update_fields[] = "Ciudad='$ciudad'";
     if ($direccion !== $fila['Direccion']) $update_fields[] = "Direccion='$direccion'";
     if ($usuario !== $fila['Usuario']) $update_fields[] = "Usuario='$usuario'";
-    if ($password !== $fila['Password']) $update_fields[] = "Password='$password'";
+    // Encriptar la contraseña solo si se ingresó una nueva
+if (!empty($password) && $password !== $fila['Password']) {
+    $password = password_hash($password, PASSWORD_DEFAULT);
+    $update_fields[] = "Password='$password'";
+}
+
     if ($estado !== $fila['Estado']) $update_fields[] = "Estado='$estado'";
     if ($rol !== (int) $fila['rol']) $update_fields[] = "rol='$rol'";
 
