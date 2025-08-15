@@ -56,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt_insert->close();
     }
+$conexion->close();
 
     // Redirigir con éxito
     header("Location:../pages/gestion_de_permisos.php?id_admin=$id_admin_form&success=1");
