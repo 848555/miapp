@@ -1,5 +1,13 @@
 <?php
 session_start();
+<?php
+session_start();
+// Verificar si 'usuario' está definido en la sesión
+if (!isset($_SESSION['usuario']) || $_SESSION['usuario'] === '') {
+    header("Location: ../../../../index.php");
+    exit;
+}
+include(__DIR__ . '../../../config/conexion.php');
 include(__DIR__ . '../../../config/conexion.php');
 
 // Respuesta AJAX para actualizar solo la tabla sin recargar
