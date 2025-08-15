@@ -1,21 +1,17 @@
 <?php
-$start_global = microtime(true);
+$host = "b4c1tgfsfzndtxfygnwk-mysql.services.clever-cloud.com";
+$puerto = 3306;
 
-$start_conexion = microtime(true);
-   include(__DIR__ . '/config/conexion.php');
-$end_conexion = microtime(true);
+$inicio = microtime(true);
+$conexion = @fsockopen($host, $puerto, $errno, $errstr, 5); // timeout de 5 segundos
+$fin = microtime(true);
 
-$start_query = microtime(true);
-$result = $conexion->query("SELECT id_usuarios FROM usuarios LIMIT 1");
-$end_query = microtime(true);
-
-$end_global = microtime(true);
-
-echo "<pre>";
-echo "⏱ Tiempo conexión: " . round(($end_conexion - $start_conexion) * 1000, 2) . " ms\n";
-echo "⏱ Tiempo consulta: " . round(($end_query - $start_query) * 1000, 2) . " ms\n";
-echo "⏱ Tiempo total: " . round(($end_global - $start_global) * 1000, 2) . " ms\n";
-echo "</pre>";
-
-$conexion->close();
+if ($conexion) {
+    fclose($conexion);
+    $latencia_ms = round(($fin - $inicio) * 1000, 2);
+    echo "⏱ Latencia TCP hacia MySQL: {$latencia_ms} ms\n";
+} else {
+    echo "❌ No se pudo conectar: $errstr ($errno)\n";
+}
 ?>
+
