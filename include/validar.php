@@ -8,14 +8,15 @@ if (isset($_POST['usuario']) && isset($_POST['password'])) {
     $usuario = $_POST['usuario'];
     $password = $_POST['password'];
 
-    $consulta = "SELECT * FROM usuarios WHERE Usuario=? AND Password=?";
+    // Solo seleccionamos por Usuario, no por Password
+    $consulta = "SELECT * FROM usuarios WHERE Usuario=?";
     $stmt = mysqli_prepare($conexion, $consulta);
 
     if (!$stmt) {
         die("Error en la preparación de la consulta: " . mysqli_error($conexion));
     }
 
-    mysqli_stmt_bind_param($stmt, "ss", $usuario, $password);
+    mysqli_stmt_bind_param($stmt, "s", $usuario);
     mysqli_stmt_execute($stmt);
     $resultado = mysqli_stmt_get_result($stmt);
 
@@ -25,7 +26,7 @@ if (isset($_POST['usuario']) && isset($_POST['password'])) {
 
     $filas = mysqli_fetch_array($resultado);
 
-    if ($filas) {
+    if ($filas && password_verify($password, $filas['Password'])) { // ✅ Validación de contraseña encriptada
         $estado_usuario = trim($filas['Estado']);
 
         if (strcasecmp($estado_usuario, 'Sancionado') == 0) {
@@ -42,8 +43,6 @@ if (isset($_POST['usuario']) && isset($_POST['password'])) {
         $_SESSION['usuario'] = $usuario;
         $_SESSION['id_usuario'] = $filas['id_usuarios'];
         $_SESSION['rol'] = $filas['rol'];
-
-        // ❌ Ya no se precargan permisos aquí
 
         // ✅ Redirección según el rol
         if ($filas['rol'] == 1) {
