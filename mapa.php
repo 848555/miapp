@@ -1,6 +1,6 @@
 <?php
 session_start();
-include(__DIR__ . '../../../config/conexion.php');
+include(__DIR__ . '/config/conexion.php');
 
 if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 2) {
     header("Location: ../../../../index.php");
