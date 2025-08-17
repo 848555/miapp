@@ -271,3 +271,7 @@ if (isset($_SESSION['success_message'])) {
 </body>
 
 </html>
+<?php
+$conexion->close();
+?>
+
