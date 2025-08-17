@@ -220,3 +220,6 @@ Ganancias - Retenciones de Usuarios
 
 </body>
 </html>
+<?php
+$conexion->close();
+?>
