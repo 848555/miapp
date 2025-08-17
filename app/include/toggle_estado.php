@@ -18,3 +18,5 @@ if ($check->num_rows > 0) {
 // Devolver estado actualizado
 $status = $conexion->query("SELECT en_linea FROM mototaxistas_en_linea WHERE id_usuario = $id_usuario")->fetch_assoc();
 echo json_encode(['en_linea' => (bool)$status['en_linea']]);
+// Cerrar conexión explícitamente
+$conexion->close();
