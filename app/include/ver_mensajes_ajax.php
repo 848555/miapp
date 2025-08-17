@@ -36,4 +36,5 @@ if (!empty($mensajes)) {
         echo '<p class="mensaje">' . htmlspecialchars($mensaje['mensaje']) . '<br><em>';
     }
 }
+    $conexion->close();
 ?>
