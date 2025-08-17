@@ -99,3 +99,10 @@ $resultado_acciones = $conexion->query($sql_acciones);
 
 </body>
 </html>
+<?php
+// liberar el resultado
+$resultado_acciones->free();
+// cerrar la conexión
+$conexion->close();
+?>
+
