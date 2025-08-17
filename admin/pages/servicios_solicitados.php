@@ -212,3 +212,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 </body>
 </html>
+
+<?php
+$conexion->close();
+?>
+
