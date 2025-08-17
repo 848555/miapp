@@ -148,7 +148,8 @@ $stmt->bind_param(
 );
 $stmt->execute();
 $stmt->close();
-
+// ====== Cerrar conexión ======
+$conexion->close();
 // ====== Redirigir ======
 header("Location: ../pages/inicio.php");
 exit();
