@@ -96,3 +96,9 @@ $resultado = $stmt->get_result();
 
 </body>
 </html>
+
+<?php
+$stmt->close();
+$conexion->close(); 
+?>
+
