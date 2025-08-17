@@ -13,3 +13,5 @@ if ($check->num_rows > 0) {
 } else {
     echo json_encode(['en_linea' => false]);
 }
+
+$conexion->close(); // 👈 cierre de conexión
