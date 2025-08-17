@@ -1,14 +1,17 @@
 <?php
 // monitor_conexiones.php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include(__DIR__ . '/config/conexion.php'); // Incluye tu conexión
 
+// Registro global de consultas y conexiones
 $GLOBALS['consulta_registro'] = [];
 
-// Sobrescribimos mysqli_query temporalmente
-function mysqli_query_monitoreada($sql) {
+// Función para registrar que se hizo una consulta
+function registrarConsulta() {
     global $conexion, $consulta_registro;
 
-    // Obtenemos el archivo que llamó la consulta
     $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
     $archivo = isset($backtrace[1]['file']) ? $backtrace[1]['file'] : 'desconocido';
 
@@ -21,29 +24,24 @@ function mysqli_query_monitoreada($sql) {
 
     $consulta_registro[$archivo]['consultas']++;
     $consulta_registro[$archivo]['conexion_abierta'] = $conexion->ping() ? 1 : 0;
-
-    // Ejecutamos la consulta real
-    return mysqli_query($conexion, $sql);
 }
 
 // Función para mostrar el resumen
-function mostrarResumen() {
+function mostrarResumenConexiones() {
     global $consulta_registro;
     echo "<pre>Resumen de consultas y conexiones abiertas:\n";
     foreach ($consulta_registro as $archivo => $info) {
-        if ($info['consultas'] > 10 || $info['conexion_abierta'] > 0) {
-            echo "Archivo: $archivo\n";
-            echo "Consultas realizadas: {$info['consultas']}\n";
-            echo "Conexión abierta: " . ($info['conexion_abierta'] ? "Sí" : "No") . "\n\n";
-        }
+        echo "Archivo: $archivo\n";
+        echo "Consultas registradas: {$info['consultas']}\n";
+        echo "Conexión abierta: " . ($info['conexion_abierta'] ? "Sí" : "No") . "\n\n";
     }
     echo "</pre>";
 }
 
-// ----------- EJEMPLO DE USO -----------
-// Reemplaza temporalmente tus consultas para monitoreo:
-$resultado = mysqli_query_monitoreada("SELECT * FROM usuarios");
-$resultado2 = mysqli_query_monitoreada("SELECT * FROM solicitudes");
+// ----------- USO -----------
+// Solo para pruebas: registra consultas simuladas
+registrarConsulta(); // Llamar cada vez que se haga una consulta real
+registrarConsulta(); // Llamar de nuevo para simular otra consulta
 
-// Al final mostramos el resumen
-mostrarResumen();
+// Mostrar resumen al final
+mostrarResumenConexiones();
