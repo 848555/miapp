@@ -123,8 +123,11 @@ $sql_update = "UPDATE documentos SET
 if ($conexion->query($sql_update)) {
     $_SESSION['mensaje'] = "Documentos subidos correctamente.";
     header("Location: ../pages/sermototaxista.php");
+   
     exit();
 } else {
     echo "Error al actualizar la base de datos: " . $conexion->error;
 }
+ // Cerrar conexión al final
+$conexion->close();
 ?>
