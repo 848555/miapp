@@ -19,8 +19,10 @@ if ($solicitud->num_rows > 0) {
             'id_usuario' => $mototaxista['id_usuario'],
             'solicitud' => $sol
         ]);
+          mysqli_close($conexion); // 👈 cerrar aquí
         exit;
     }
 }
 
 echo json_encode(['asignada' => false]);
+mysqli_close($conexion);
