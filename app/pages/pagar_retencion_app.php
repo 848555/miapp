@@ -83,3 +83,9 @@ $resultado = $conexion->query($sql);
 
 </body>
 </html>
+
+<?php
+// ✅ Ahora sí, después de usar los datos
+$resultado->free();
+$conexion->close();
+?>
