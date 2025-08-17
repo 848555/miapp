@@ -192,3 +192,6 @@ if (!empty($perfil_usuario['Departamento'])) {
 
 </body>
 </html>
+<?php
+$conexion->close();
+?>
