@@ -110,3 +110,7 @@ $solicitudes_pendientes = $result->fetch_all(MYSQLI_ASSOC);
 
 </body>
 </html>
+<?php
+// Al final del archivo cerramos la conexión
+$conexion->close();
+?>
