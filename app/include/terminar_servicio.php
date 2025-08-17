@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $_SESSION['error_message'] = 'Error al preparar la consulta: ' . $conexion->error;
     }
-
+  $conexion->close(); // ✅ Cierra la conexión explícitamente
     // Redirigir a la página de éxito o error
     header('Location: ../pages/sermototaxista.php');
     exit;
