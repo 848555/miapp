@@ -7,7 +7,7 @@ $userId = $_SESSION['id_usuario']; // El ID del usuario debe estar en la sesión
 
 
 if ($conexion->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
+    die("Error de conexión: " . $conexion->connect_error);
 }
 
 // Consulta para verificar si el usuario ya tiene documentos subidos
