@@ -30,6 +30,7 @@ function obtenerDatos($conexion, $id_usuario) {
 
 // Obtener los datos actuales
 $documentos_moto = obtenerDatos($conexion, $id_usuario);
+$conexion->close();
 ?>
 <!DOCTYPE html>
 <html lang="es">
