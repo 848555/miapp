@@ -1,4 +1,4 @@
-
+/*
 // Función para alternar visibilidad de la contraseña
 function togglePasswordVisibility(id) {
     var input = document.getElementById(id);
@@ -12,7 +12,7 @@ function togglePasswordVisibility(id) {
         icon.classList.remove("fa-eye-slash");
         icon.classList.add("fa-eye");
     }
-}
+} */
 
 // Función para validar las contraseñas
 function validarContraseñas() {
