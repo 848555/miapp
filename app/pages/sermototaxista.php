@@ -130,7 +130,7 @@ $user_id = $_SESSION['id_usuario'];
     </script>
     <script src="/app/assets/js/solicitudes.js"></script>
     
- <script>
+<script>
 document.addEventListener('DOMContentLoaded', function () {
     const btn = document.getElementById('toggleOnlineBtn');
     const texto = document.getElementById('estadoTexto');
@@ -138,14 +138,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const audio = document.getElementById('conexionSonido');
 
     btn.addEventListener('click', function () {
-        // 🔓 Intentar desbloquear audio con el clic
-        if (audio) {
-            audio.play().then(() => {
-                audio.pause(); 
-                audio.currentTime = 0; 
-            }).catch(err => console.warn("Audio bloqueado:", err));
-        }
-
         // ⚡ Fetch al backend
         fetch('cambiar_estado.php')
             .then(response => response.json())
@@ -155,9 +147,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     texto.textContent = 'Conectado';
                     icono.setAttribute('name', 'power');
 
-                    // 🎵 Reproducir si quedó conectado
+                    // 🎵 Reproducir solo cuando realmente está conectado
                     if (audio) {
-                        audio.currentTime = 0;
+                        audio.currentTime = 0; 
                         audio.play().catch(err => console.warn("Audio bloqueado:", err));
                     }
                 } else {
@@ -170,6 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
 
 
 
