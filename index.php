@@ -39,10 +39,13 @@ session_start();
                         <?php unset($_SESSION['error']); ?>
                     <?php endif; ?>
                     <input type="text" placeholder="Usuario" name="usuario" id="usuario" class="form-control mb-2">
-                       <div class="password-container">
-                        <input type="password" placeholder="Contraseña" name="contraseña" id="contraseña" class="password-input">
-                        <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('contraseña')"></i>
-                    </div>
+                      <div class="password-container" style="position: relative; display: flex; align-items: center;">
+    <input type="password" placeholder="Contraseña" name="password" id="password" class="form-control mb-3">
+    <i class="fas fa-eye toggle-password" 
+       onclick="togglePasswordVisibility('password')" 
+       style="position: absolute; right: 10px; cursor: pointer;"></i>
+</div>
+
                     
                     <div class="d-grid gap-2">
             <button type="submit" class="btn btn-principal" name="btn" value="ok">Ingresar</button>
