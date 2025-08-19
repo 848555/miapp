@@ -138,6 +138,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const audio = document.getElementById('conexionSonido');
 
     btn.addEventListener('click', function () {
+        // ⚡ Pre-desbloquear el audio con el click
+        if (audio) {
+            audio.play().then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+            }).catch(err => console.warn("Audio bloqueado:", err));
+        }
+
         // ⚡ Fetch al backend
         fetch('cambiar_estado.php')
             .then(response => response.json())
@@ -162,7 +170,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-
 
 
 
