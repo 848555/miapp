@@ -129,33 +129,34 @@ $user_id = $_SESSION['id_usuario'];
         const userId = <?php echo $user_id; ?>;
     </script>
     <script src="/app/assets/js/solicitudes.js"></script>
+    
     <script>
 document.addEventListener('DOMContentLoaded', function () {
     const btn = document.getElementById('toggleOnlineBtn');
     const texto = document.getElementById('estadoTexto');
     const icono = document.getElementById('estadoIcono');
     const audio = document.getElementById('conexionSonido');
-    let conectado = false;
 
     btn.addEventListener('click', function () {
-        conectado = !conectado;
-
-        if (conectado) {
-            btn.classList.add('activo');
-            texto.textContent = 'Conectado';
-            icono.setAttribute('name', 'power');
-             audio.play(); 
-        } else {
-            btn.classList.remove('activo');
-            texto.textContent = 'Desconectado';
-            icono.setAttribute('name', 'power-outline');
-            
-        }
-
-        // Aquí podrías hacer fetch para actualizar el estado en el backend
+        fetch('cambiar_estado.php') // 👈 tu script PHP
+            .then(response => response.json())
+            .then(data => {
+                if (data.en_linea) {
+                    btn.classList.add('activo');
+                    texto.textContent = 'Conectado';
+                    icono.setAttribute('name', 'power');
+                    audio.play();
+                } else {
+                    btn.classList.remove('activo');
+                    texto.textContent = 'Desconectado';
+                    icono.setAttribute('name', 'power-outline');
+                }
+            })
+            .catch(err => console.error("Error al cambiar estado:", err));
     });
 });
 </script>
+
 
 </body>
 </html>
