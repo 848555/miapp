@@ -18,14 +18,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-=== Modo oscuro ===
-document.addEventListener('DOMContentLoaded', () => {
+    // === Modo oscuro ===
     const modoOscuroSwitch = document.querySelector('.modo-oscuro .switch');
     const baseSwitch = document.querySelector('.modo-oscuro .base');
     const circuloSwitch = document.querySelector('.modo-oscuro .circulo');
     const body = document.body;
-
-    if (!modoOscuroSwitch || !baseSwitch || !circuloSwitch) return; // evita errores si faltan
 
     // Aplicar estado guardado
     if (localStorage.getItem('modoOscuro') === 'enabled') {
@@ -41,10 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
         circuloSwitch.classList.toggle('activo', activo);
         localStorage.setItem('modoOscuro', activo ? 'enabled' : 'disabled');
     });
-});
-
-
-
 
     // === Accesibilidad ===
     const accessibilityIcon = document.getElementById('accessibility-icon');
