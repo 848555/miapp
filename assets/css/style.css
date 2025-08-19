@@ -206,7 +206,7 @@ main {
 
 /* Estilo para el ícono de ojo dentro del contenedor */
 .password-container .toggle-password {
-    position: absolute;
+    position: relative;
     right: 10px;
     top: 70%; /* puedes cambiar a 50% para centrar verticalmente */
     transform: translateY(-50%);
