@@ -152,7 +152,8 @@ document.addEventListener('DOMContentLoaded', function () {
             texto.textContent = 'Desconectado';
             icono.setAttribute('name', 'power-outline');
         }
-
+   });
+});
 </script>
 
 
