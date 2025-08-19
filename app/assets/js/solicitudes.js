@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     fetchSolicitudes();
     setInterval(fetchSolicitudes, 5 * 60 * 1000);
@@ -21,100 +20,25 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_solicitud: idSolicitud, id_usuarios: idUsuarios, rating, comentarios })
         })
-        .then(res => res.json())
-        .then(data => {
-            alert(data.success ? 'Calificación enviada correctamente' : 'Error al enviar la calificación');
-            if (data.success) {
-                closeCalificarModal();
-                fetchSolicitudes();
-            }
-        })
-        .catch(console.error);
-    });
-
-    // Mostrar mensajes
-    ['success-message', 'error-message'].forEach(id => {
-        const msg = document.getElementById(id);
-        if (msg) {
-            msg.style.display = 'block';
-            setTimeout(() => { msg.style.display = 'none'; }, 5000);
-        }
-    });
-
-   // Escuchar asignaciones
-let ultimaSolicitudMostrada = null; // 👈 variable global
-
-document.addEventListener('DOMContentLoaded', () => {
-    fetchSolicitudes();
-    setInterval(fetchSolicitudes, 5 * 60 * 1000);
-
-    const terminarServicioModal = document.getElementById('terminarServicioModal');
-    terminarServicioModal.addEventListener('click', (e) => {
-        if (e.target === terminarServicioModal) closeTerminarServicioModal();
-    });
-
-    document.getElementById('calificarClienteForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const idSolicitud = document.getElementById('id_solicitud').value;
-        const idUsuarios = document.getElementById('id_usuarios').value;
-        const rating = document.getElementById('rating').value;
-        const comentarios = document.getElementById('comentarios').value;
-
-        fetch('/app/include/calificar_cliente.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_solicitud: idSolicitud, id_usuarios: idUsuarios, rating, comentarios })
-        })
-        .then(res => res.json())
-        .then(data => {
-            alert(data.success ? 'Calificación enviada correctamente' : 'Error al enviar la calificación');
-            if (data.success) {
-                closeCalificarModal();
-                fetchSolicitudes();
-            }
-        })
-        .catch(console.error);
-    });
-});
-
-// ================== FUNCIÓN FETCH ==================
-function fetchSolicitudes() {
-    fetch('/app/include/obtener_solicitudes.php')
-        .then(res => res.json())
-        .then(data => {
-            if (data.solicitud) {
-                const idSolicitud = data.solicitud.id_solicitud;
-
-                // Revisar si ya fue rechazada en localStorage
-                let rechazadas = JSON.parse(localStorage.getItem('rechazadas') || '[]');
-                if (!rechazadas.includes(idSolicitud) && idSolicitud !== ultimaSolicitudMostrada) {
-                    mostrarSolicitud(data.solicitud);
-                    ultimaSolicitudMostrada = idSolicitud;
+            .then(res => res.json())
+            .then(data => {
+                alert(data.success ? 'Calificación enviada correctamente' : 'Error al enviar la calificación');
+                if (data.success) {
+                    closeCalificarModal();
+                    fetchSolicitudes();
                 }
-            }
-        })
-        .catch(console.error);
-}
-
-// ================== RECHAZAR SOLICITUD ==================
-function rechazarSolicitud(idSolicitud) {
-    let rechazadas = JSON.parse(localStorage.getItem('rechazadas') || '[]');
-    if (!rechazadas.includes(idSolicitud)) {
-        rechazadas.push(idSolicitud);
-        localStorage.setItem('rechazadas', JSON.stringify(rechazadas));
-    }
-
-    ultimaSolicitudMostrada = null; // 🔄 reset para que llegue otra
-    fetchSolicitudes(); // pedir la siguiente
-}
+            })
+            .catch(console.error);
+    });
 
     // Mostrar mensajes
     ['success-message', 'error-message'].forEach(id => {
         const msg = document.getElementById(id);
         if (msg) {
             msg.style.display = 'block';
-            setTimeout(() => { msg.style.display = 'none'; }, 5000);
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 5000);
         }
     });
 
@@ -128,6 +52,7 @@ function fetchSolicitudes(page = 1) {
         .then(data => {
             const container = document.getElementById('solicitudes-container');
             const pagination = document.getElementById('pagination');
+
             container.innerHTML = '';
             pagination.innerHTML = '';
 
@@ -189,12 +114,8 @@ function escucharAsignaciones() {
         .then(res => res.json())
         .then(data => {
             if (data.asignada && data.id_usuario == userId) {
-                // ✅ solo mostrar confirm si la solicitud es nueva
-                if (ultimaSolicitudMostrada !== data.solicitud.id_solicitud) {
-                    ultimaSolicitudMostrada = data.solicitud.id_solicitud;
-                    if (confirm(`Tienes una solicitud de ${data.solicitud.origen} a ${data.solicitud.destino}. ¿Aceptar?`)) {
-                        window.location.href = `/app/include/aceptar_solicitud.php?id_solicitud=${data.solicitud.id_solicitud}&id_usuario=${data.solicitud.id_usuarios}`;
-                    }
+                if (confirm(`Tienes una solicitud de ${data.solicitud.origen} a ${data.solicitud.destino}. ¿Aceptar?`)) {
+                    window.location.href = `/app/include/aceptar_solicitud.php?id_solicitud=${data.solicitud.id_solicitud}&id_usuario=${data.solicitud.id_usuarios}`;
                 }
             }
         })
