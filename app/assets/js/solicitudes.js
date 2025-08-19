@@ -42,6 +42,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Escuchar asignaciones
+let ultimaSolicitudMostrada = null; // 👈 agregamos variable global
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchSolicitudes();
+    setInterval(fetchSolicitudes, 5 * 60 * 1000);
+
+    const terminarServicioModal = document.getElementById('terminarServicioModal');
+    terminarServicioModal.addEventListener('click', (e) => {
+        if (e.target === terminarServicioModal) closeTerminarServicioModal();
+    });
+
+    document.getElementById('calificarClienteForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const idSolicitud = document.getElementById('id_solicitud').value;
+        const idUsuarios = document.getElementById('id_usuarios').value;
+        const rating = document.getElementById('rating').value;
+        const comentarios = document.getElementById('comentarios').value;
+
+        fetch('/app/include/calificar_cliente.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_solicitud: idSolicitud, id_usuarios: idUsuarios, rating, comentarios })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.success ? 'Calificación enviada correctamente' : 'Error al enviar la calificación');
+            if (data.success) {
+                closeCalificarModal();
+                fetchSolicitudes();
+            }
+        })
+        .catch(console.error);
+    });
+
+    // Mostrar mensajes
+    ['success-message', 'error-message'].forEach(id => {
+        const msg = document.getElementById(id);
+        if (msg) {
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 5000);
+        }
+    });
+
+    // Escuchar asignaciones
     setInterval(escucharAsignaciones, 10000);
 });
 
@@ -112,10 +157,15 @@ function escucharAsignaciones() {
         .then(res => res.json())
         .then(data => {
             if (data.asignada && data.id_usuario == userId) {
-                if (confirm(`Tienes una solicitud de ${data.solicitud.origen} a ${data.solicitud.destino}. ¿Aceptar?`)) {
-                    window.location.href = `/app/include/aceptar_solicitud.php?id_solicitud=${data.solicitud.id_solicitud}&id_usuario=${data.solicitud.id_usuarios}`;
+                // ✅ solo mostrar confirm si la solicitud es nueva
+                if (ultimaSolicitudMostrada !== data.solicitud.id_solicitud) {
+                    ultimaSolicitudMostrada = data.solicitud.id_solicitud;
+                    if (confirm(`Tienes una solicitud de ${data.solicitud.origen} a ${data.solicitud.destino}. ¿Aceptar?`)) {
+                        window.location.href = `/app/include/aceptar_solicitud.php?id_solicitud=${data.solicitud.id_solicitud}&id_usuario=${data.solicitud.id_usuarios}`;
+                    }
                 }
             }
         })
         .catch(console.error);
 }
+
