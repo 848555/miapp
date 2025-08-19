@@ -198,24 +198,24 @@ main {
     }
 }
 
-/* Estilo para el contenedor de la contraseña */
+/* Contenedor de la contraseña */
 .password-container {
     position: relative;
     margin-bottom: 15px;
 }
 
-/* Estilo para el ícono de ojo dentro del contenedor */
+/* Ícono de ojo dentro del contenedor */
 .password-container .toggle-password {
     position: absolute;
     right: 10px;
-    top: 70%;
+    top: 50%; /* centrado verticalmente */
     transform: translateY(-50%);
     cursor: pointer;
     color: #aaa;
+    font-size: 1rem; /* tamaño consistente */
 }
 
-/* Estilo para el campo de contraseña */
-.password-input {
-    padding-right: 30px;
+/* Campo de contraseña */
+.password-input, .form-control {
+    padding-right: 40px; /* espacio suficiente para el icono */
 }
-
