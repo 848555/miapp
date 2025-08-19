@@ -43,7 +43,7 @@ session_start();
 
                           <div class="password-container">
                          <input type="password" placeholder="Contraseña" name="password" id="password" class="form-control mb-3">
-                        <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility(this)"></i>
+                        <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('password')"></i>
                     </div>
    
 
@@ -66,7 +66,7 @@ session_start();
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-     <script src="/assets/js/script.js"></script>
+     <script src="/assets/js/script2.js"></script>
 </body>
 
 </html>
