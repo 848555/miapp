@@ -43,7 +43,7 @@ session_start();
 
                           <div class="password-container">
                          <input type="password" placeholder="Contraseña" name="password" id="password" class="form-control mb-3">
-                        <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('password')"></i>
+                        <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility(this)"></i>
                     </div>
    
 
