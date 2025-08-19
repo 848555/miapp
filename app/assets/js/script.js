@@ -18,8 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-// === Modo oscuro ===
-// === Modo oscuro ===
+=== Modo oscuro ===
 document.addEventListener('DOMContentLoaded', () => {
     const modoOscuroSwitch = document.querySelector('.modo-oscuro .switch');
     const baseSwitch = document.querySelector('.modo-oscuro .base');
