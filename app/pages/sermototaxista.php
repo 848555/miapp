@@ -130,7 +130,7 @@ $user_id = $_SESSION['id_usuario'];
     </script>
     <script src="/app/assets/js/solicitudes.js"></script>
     
-    <script>
+   <script>
 document.addEventListener('DOMContentLoaded', function () {
     const btn = document.getElementById('toggleOnlineBtn');
     const texto = document.getElementById('estadoTexto');
@@ -138,14 +138,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const audio = document.getElementById('conexionSonido');
 
     btn.addEventListener('click', function () {
-        fetch('cambiar_estado.php') // 👈 tu script PHP
+        // 🔊 Reproducir inmediatamente al dar clic
+        if (audio) {
+            audio.currentTime = 0; // reinicia desde el inicio
+            audio.play().catch(err => console.warn("Audio bloqueado:", err));
+        }
+
+        // ⚡ Después haces el fetch al backend
+        fetch('cambiar_estado.php')
             .then(response => response.json())
             .then(data => {
                 if (data.en_linea) {
                     btn.classList.add('activo');
                     texto.textContent = 'Conectado';
                     icono.setAttribute('name', 'power');
-                    audio.play();
                 } else {
                     btn.classList.remove('activo');
                     texto.textContent = 'Desconectado';
