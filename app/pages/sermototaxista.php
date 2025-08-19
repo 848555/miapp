@@ -130,7 +130,7 @@ $user_id = $_SESSION['id_usuario'];
     </script>
     <script src="/app/assets/js/solicitudes.js"></script>
     
-<<script>
+<script>
 document.addEventListener('DOMContentLoaded', function () {
     const btn = document.getElementById('toggleOnlineBtn');
     const texto = document.getElementById('estadoTexto');
