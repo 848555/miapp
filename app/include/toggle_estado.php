@@ -19,7 +19,7 @@ if ($check && $check->num_rows > 0) {
     $maxPrio = $maxPrioRes && $maxPrioRes->num_rows > 0 ? ($maxPrioRes->fetch_assoc()['max_prio'] ?? 0) : 0;
     $conexion->query("INSERT INTO mototaxistas_en_linea (id_usuario, en_linea, prioridad) VALUES ($id_usuario, 1, " . ($maxPrio + 1) . ")");
 }
-
+if ($check) { $check->free(); } // ✅ liberar resultado
 // Devolver estado actualizado
 $statusRes = $conexion->query("SELECT en_linea FROM mototaxistas_en_linea WHERE id_usuario = $id_usuario");
 $status = $statusRes ? $statusRes->fetch_assoc() : ['en_linea' => 0];
