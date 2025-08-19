@@ -19,24 +19,29 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 // === Modo oscuro ===
-const modoOscuroSwitch = document.querySelector('.modo-oscuro .switch');
-const baseSwitch = document.querySelector('.modo-oscuro .base');
-const circuloSwitch = document.querySelector('.modo-oscuro .circulo');
-const body = document.body;
+// === Modo oscuro ===
+document.addEventListener('DOMContentLoaded', () => {
+    const modoOscuroSwitch = document.querySelector('.modo-oscuro .switch');
+    const baseSwitch = document.querySelector('.modo-oscuro .base');
+    const circuloSwitch = document.querySelector('.modo-oscuro .circulo');
+    const body = document.body;
 
-// Aplicar estado guardado
-if (localStorage.getItem('modoOscuro') === 'enabled') {
-    body.classList.add('modo-oscuro');
-    baseSwitch.classList.add('activo');
-    circuloSwitch.classList.add('activo');
-}
+    if (!modoOscuroSwitch || !baseSwitch || !circuloSwitch) return; // evita errores si faltan
 
-// Manejar click
-modoOscuroSwitch.addEventListener('click', function () {
-    const activo = body.classList.toggle('modo-oscuro');
-    baseSwitch.classList.toggle('activo', activo);
-    circuloSwitch.classList.toggle('activo', activo);
-    localStorage.setItem('modoOscuro', activo ? 'enabled' : 'disabled');
+    // Aplicar estado guardado
+    if (localStorage.getItem('modoOscuro') === 'enabled') {
+        body.classList.add('modo-oscuro');
+        baseSwitch.classList.add('activo');
+        circuloSwitch.classList.add('activo');
+    }
+
+    // Manejar click
+    modoOscuroSwitch.addEventListener('click', function () {
+        const activo = body.classList.toggle('modo-oscuro');
+        baseSwitch.classList.toggle('activo', activo);
+        circuloSwitch.classList.toggle('activo', activo);
+        localStorage.setItem('modoOscuro', activo ? 'enabled' : 'disabled');
+    });
 });
 
 
