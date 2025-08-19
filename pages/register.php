@@ -54,7 +54,7 @@ $resultado_departamentos = $conexion->query($sql_departamentos);
                     
                     <div class="password-container">
                         <input type="password" placeholder="Contraseña" name="contraseña" id="contraseña" class="password-input">
-                        <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility(this)"></i>
+                        <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('contraseña')"></i>
                     </div>
                     
                    
