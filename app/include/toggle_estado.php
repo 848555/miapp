@@ -1,29 +1,30 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 include(__DIR__ . '../../../config/conexion.php');
 
-header('Content-Type: application/json; charset=utf-8'); // 👈 asegura salida JSON
+// Obtener solicitudes no asignadas
+$solicitud = $conexion->query("SELECT * FROM solicitudes WHERE estado = 'pendiente' ORDER BY id_solicitud ASC LIMIT 1");
 
-$id_usuario = intval($_SESSION['id_usuario']); // 👈 sanitizar por seguridad
+if ($solicitud->num_rows > 0) {
+    $sol = $solicitud->fetch_assoc();
 
-$check = $conexion->query("SELECT * FROM mototaxistas_en_linea WHERE id_usuario = $id_usuario");
+    // Obtener mototaxista en línea con menor prioridad y disponible
+    $mtx = $conexion->query("SELECT * FROM mototaxistas_en_linea WHERE en_linea = 1 AND en_servicio = 0 ORDER BY prioridad ASC LIMIT 1");
 
-if ($check && $check->num_rows > 0) {
-    // Alternar estado
-    $conexion->query("UPDATE mototaxistas_en_linea SET en_linea = NOT en_linea WHERE id_usuario = $id_usuario");
-} else {
-    // Insertar con en_linea = 1 por defecto
-    $maxPrioRes = $conexion->query("SELECT MAX(prioridad) AS max_prio FROM mototaxistas_en_linea");
-    $maxPrio = $maxPrioRes && $maxPrioRes->num_rows > 0 ? ($maxPrioRes->fetch_assoc()['max_prio'] ?? 0) : 0;
-    $conexion->query("INSERT INTO mototaxistas_en_linea (id_usuario, en_linea, prioridad) VALUES ($id_usuario, 1, " . ($maxPrio + 1) . ")");
+    if ($mtx->num_rows > 0) {
+        $mototaxista = $mtx->fetch_assoc();
+
+        // Asignar solicitud provisionalmente (no cambiar el estado aún)
+        echo json_encode([
+            'asignada' => true,
+            'id_usuario' => $mototaxista['id_usuario'],
+            'solicitud' => $sol
+        ]);
+
+        mysqli_close($conexion); // 👈 cerrar aquí
+        exit;
+    }
 }
-if ($check) { $check->free(); } // ✅ liberar resultado
-// Devolver estado actualizado
-$statusRes = $conexion->query("SELECT en_linea FROM mototaxistas_en_linea WHERE id_usuario = $id_usuario");
-$status = $statusRes ? $statusRes->fetch_assoc() : ['en_linea' => 0];
 
-echo json_encode(['en_linea' => (bool)$status['en_linea']]);
-
-$conexion->close();
+// Si no hay solicitud o no hay mototaxista disponible
+echo json_encode(['asignada' => false]);
+mysqli_close($conexion);
