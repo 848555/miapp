@@ -204,18 +204,18 @@ main {
     margin-bottom: 15px;
 }
 
-/* Ícono de ojo dentro del contenedor */
+/* Estilo para el ícono de ojo dentro del contenedor */
 .password-container .toggle-password {
     position: absolute;
     right: 10px;
-    top: 50%; /* centrado verticalmente */
+    top: 70%; /* puedes cambiar a 50% para centrar verticalmente */
     transform: translateY(-50%);
     cursor: pointer;
     color: #aaa;
-    font-size: 1rem; /* tamaño consistente */
 }
 
-/* Campo de contraseña */
-.password-input, .form-control {
-    padding-right: 40px; /* espacio suficiente para el icono */
+/* Estilo para el campo de contraseña */
+.password-input {
+    padding-right: 30px;
 }
+
