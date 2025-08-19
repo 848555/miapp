@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Escuchar asignaciones
-let ultimaSolicitudMostrada = null; // 👈 agregamos variable global
+   // Escuchar asignaciones
+let ultimaSolicitudMostrada = null; // 👈 variable global
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchSolicitudes();
@@ -76,6 +76,38 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(console.error);
     });
+});
+
+// ================== FUNCIÓN FETCH ==================
+function fetchSolicitudes() {
+    fetch('/app/include/obtener_solicitudes.php')
+        .then(res => res.json())
+        .then(data => {
+            if (data.solicitud) {
+                const idSolicitud = data.solicitud.id_solicitud;
+
+                // Revisar si ya fue rechazada en localStorage
+                let rechazadas = JSON.parse(localStorage.getItem('rechazadas') || '[]');
+                if (!rechazadas.includes(idSolicitud) && idSolicitud !== ultimaSolicitudMostrada) {
+                    mostrarSolicitud(data.solicitud);
+                    ultimaSolicitudMostrada = idSolicitud;
+                }
+            }
+        })
+        .catch(console.error);
+}
+
+// ================== RECHAZAR SOLICITUD ==================
+function rechazarSolicitud(idSolicitud) {
+    let rechazadas = JSON.parse(localStorage.getItem('rechazadas') || '[]');
+    if (!rechazadas.includes(idSolicitud)) {
+        rechazadas.push(idSolicitud);
+        localStorage.setItem('rechazadas', JSON.stringify(rechazadas));
+    }
+
+    ultimaSolicitudMostrada = null; // 🔄 reset para que llegue otra
+    fetchSolicitudes(); // pedir la siguiente
+}
 
     // Mostrar mensajes
     ['success-message', 'error-message'].forEach(id => {
