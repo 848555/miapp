@@ -130,45 +130,29 @@ $user_id = $_SESSION['id_usuario'];
     </script>
     <script src="/app/assets/js/solicitudes.js"></script>
     
-<script>
+<<script>
 document.addEventListener('DOMContentLoaded', function () {
     const btn = document.getElementById('toggleOnlineBtn');
     const texto = document.getElementById('estadoTexto');
     const icono = document.getElementById('estadoIcono');
     const audio = document.getElementById('conexionSonido');
 
+    let conectado = false; // Estado inicial
+
     btn.addEventListener('click', function () {
-        // ⚡ Pre-desbloquear el audio con el click
-        if (audio) {
-            audio.play().then(() => {
-                audio.pause();
-                audio.currentTime = 0;
-            }).catch(err => console.warn("Audio bloqueado:", err));
+        conectado = !conectado; // Cambiar estado
+
+        if (conectado) {
+            btn.classList.add('activo');
+            texto.textContent = 'Conectado';
+            icono.setAttribute('name', 'power');
+            audio.play(); // Reproduce sonido al conectarse
+        } else {
+            btn.classList.remove('activo');
+            texto.textContent = 'Desconectado';
+            icono.setAttribute('name', 'power-outline');
         }
 
-        // ⚡ Fetch al backend
-        fetch('cambiar_estado.php')
-            .then(response => response.json())
-            .then(data => {
-                if (data.en_linea) {
-                    btn.classList.add('activo');
-                    texto.textContent = 'Conectado';
-                    icono.setAttribute('name', 'power');
-
-                    // 🎵 Reproducir solo cuando realmente está conectado
-                    if (audio) {
-                        audio.currentTime = 0; 
-                        audio.play().catch(err => console.warn("Audio bloqueado:", err));
-                    }
-                } else {
-                    btn.classList.remove('activo');
-                    texto.textContent = 'Desconectado';
-                    icono.setAttribute('name', 'power-outline');
-                }
-            })
-            .catch(err => console.error("Error al cambiar estado:", err));
-    });
-});
 </script>
 
 
