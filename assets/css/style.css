@@ -206,16 +206,22 @@ main {
 
 /* Estilo para el ícono de ojo dentro del contenedor */
 .password-container .toggle-password {
-    position: relative;
+    position: absolute;
     right: 10px;
-    top: 70%; /* puedes cambiar a 50% para centrar verticalmente */
+    top: 50%; /* mejor centrado verticalmente */
     transform: translateY(-50%);
     cursor: pointer;
-    color: #aaa;
+    color: #000;       /* negro */
+    font-size: 24px;   /* más grande */
+    transition: all 0.2s; /* suaviza efectos */
+}
+
+.password-container .toggle-password:hover {
+    color: #222;        /* negro más intenso al pasar el mouse */
+    transform: translateY(-50%) scale(1.2); /* pequeño efecto de zoom */
 }
 
 /* Estilo para el campo de contraseña */
 .password-input {
-    padding-right: 30px;
+    padding-right: 40px; /* más espacio para el ojo más grande */
 }
-
