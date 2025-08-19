@@ -1,9 +1,8 @@
 
 
 // Función para alternar visibilidad de la contraseña
-function togglePasswordVisibility(id) {
-    var input = document.getElementById(id);
-    var icon = input.nextElementSibling;
+function togglePasswordVisibility(icon) {
+    var input = icon.previousElementSibling; // el input justo antes del icono
 
     if (input.type === "password") {
         input.type = "text";
@@ -15,7 +14,6 @@ function togglePasswordVisibility(id) {
         icon.classList.add("fa-eye");
     }
 }
-
 // Función para validar las contraseñas
 function validarContraseñas() {
     var nuevaContraseña = document.getElementById("contraseña").value;
