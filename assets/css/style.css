@@ -204,19 +204,17 @@ main {
     margin-bottom: 15px;
 }
 
-/* Icono de ojo */
 .password-container .toggle-password {
     position: absolute;
-    right: 10px;
-    top: 50%;                /* Centrado vertical */
+    right: 12px;             /* un poco más hacia la derecha */
+    top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
     color: #aaa;
-    font-size: 1em;           /* Ajusta tamaño para evitar ilusión de doble icono */
-    pointer-events: auto;
+    font-size: 1.2em;        /* aumenta un poco el tamaño del icono */
+}
 
-
-/* Estilo para el campo de contraseña */
-.password-input {
-    padding-right: 30px;
+.password-container input {
+    padding-right: 40px;     /* más espacio para el icono */
+    height: 40px;            /* asegura que input y icono queden centrados */
 }
