@@ -42,7 +42,7 @@ session_start();
                     <input type="text" placeholder="Usuario" name="usuario" id="usuario" class="form-control mb-2">
 
                           <div class="password-container">
-                         <input type="password" placeholder="Contraseña" name="password" id="password" class="form-control mb-3">
+                         <input type="password" placeholder="Contraseña" name="password" id="contraseña" class="form-control mb-3">
                         <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('contraseña')"></i>
                     </div>
    
