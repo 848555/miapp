@@ -198,4 +198,24 @@ main {
     }
 }
 
-/* Estilo para el contenedor de la contraseña */ .password-container { position: relative; margin-bottom: 15px; } /* Estilo para el ícono de ojo dentro del contenedor */ .password-container .toggle-password { position: absolute; right: 10px; top: 70%; transform: translateY(-50%); cursor: pointer; color: #aaa; } /* Estilo para el campo de contraseña */ .password-input { padding-right: 30px; }
+/* Estilo para el contenedor de la contraseña */
+.password-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+/* Estilo para el ícono de ojo dentro del contenedor */
+.password-container .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 70%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #aaa;
+}
+
+/* Estilo para el campo de contraseña */
+.password-input {
+    padding-right: 30px;
+}
+
