@@ -218,7 +218,7 @@ main {
 
 .password-container .toggle-password:hover {
     color: #222;        /* negro más intenso al pasar el mouse */
-    transform: translateY(-50%) scale(1.2); /* pequeño efecto de zoom */
+    transform: translateY(-45%) scale(1.2); /* pequeño efecto de zoom */
 }
 
 /* Estilo para el campo de contraseña */
