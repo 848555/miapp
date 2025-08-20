@@ -208,7 +208,7 @@ main {
 .password-container .toggle-password {
     position: absolute;
     right: 10px;
-    top: 50%; /* mejor centrado verticalmente */
+    top: 55%; /* mejor centrado verticalmente */
     transform: translateY(-50%);
     cursor: pointer;
     color: #000;       /* negro */
