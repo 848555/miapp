@@ -39,10 +39,10 @@ session_start();
                         <p class="alert alert-danger p-2"> <?= $_SESSION['error']; ?> </p>
                         <?php unset($_SESSION['error']); ?>
                     <?php endif; ?>
-                    <input type="text" placeholder="Usuario" name="usuario" id="usuario" class="form-control mb-2">
+                    <input type="text" placeholder="Usuario" name="usuario" id="usuario">
 
                           <div class="password-container">
-                         <input type="password" placeholder="Contraseña" name="password" id="password" class="form-control mb-3">
+                         <input type="password" placeholder="Contraseña" name="password" id="password" class="password-input">
                                   <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('password')"></i>
                     </div>
    
