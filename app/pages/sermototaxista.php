@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             // 1️⃣ Asignar nuevas solicitudes
-            const resAsignar = await fetch("/app/include/asignar_solicitud.php");
+            const resAsignar = await fetch("/app/include/asignar_solicitudes.php");
 const dataAsignar = await resAsignar.json();
 
 console.log("Respuesta asignar:", dataAsignar); // Para depuración
