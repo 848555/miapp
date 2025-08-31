@@ -25,7 +25,7 @@ $check = $conexion->query("
 ");
 
 if ($check->num_rows > 0) {
-    echo json_encode(['asignada' => false, 'mensaje' => 'Solicitud ya está siendo ofrecida']);
+    echo json_encode(['asignada' => false, 'mensaje' => 'Una Solicitud está siendo ofrecida']);
     exit;
 }
 
