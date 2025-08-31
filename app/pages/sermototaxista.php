@@ -184,32 +184,34 @@ document.addEventListener('DOMContentLoaded', function () {
  </script>
 
 
-    <script>
+    
+            <script>
 document.addEventListener("DOMContentLoaded", () => {
     const contenedor = document.getElementById("asignacion-mensaje");
     const userId = <?= $_SESSION['id_usuario'] ?>;
     let checking = false;
 
-    // Función principal: reintentar asignaciones y asignar nuevas solicitudes
+    // Función principal: asignar nuevas solicitudes y reintentar asignaciones
     async function procesarSolicitudes() {
         if (checking) return;
         checking = true;
 
         try {
-            // 1️⃣ Reintentar asignaciones pendientes
-            await fetch("/app/include/reintentar_asignacion.php");
+            // 1️⃣ Asignar nuevas solicitudes
+            const resAsignar = await fetch("/app/include/asignar_solicitud.php");
+            const dataAsignar = await resAsignar.json();
 
-            // 2️⃣ Asignar nuevas solicitudes
-            const res = await fetch("/app/include/asignar_solicitud.php");
-            const data = await res.json();
-            checking = false;
-
-            if (data.asignada && data.mototaxista.id_usuario == userId) {
-                mostrarSolicitud(data.solicitud);
+            // Mostrar solicitud solo si es para el mototaxista actual
+            if (dataAsignar.asignada && dataAsignar.mototaxista.id_usuario == userId) {
+                mostrarSolicitud(dataAsignar.solicitud);
             } else {
                 contenedor.innerHTML = "<p>No hay solicitudes pendientes para ti.</p>";
             }
 
+            // 2️⃣ Reintentar asignaciones pendientes (cancelaciones/rechazos)
+            await fetch("/app/include/reintentar_asignacion.php");
+
+            checking = false;
         } catch (err) {
             checking = false;
             console.error("Error al procesar solicitudes:", err);
@@ -253,7 +255,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const data = await res.json();
             alert(data.message);
-            procesarSolicitudes(); // Revisar nuevas solicitudes
+
+            // Revisar nuevas solicitudes después de aceptar/rechazar
+            procesarSolicitudes();
 
         } catch (err) {
             console.error(`Error al ${accion} solicitud:`, err);
@@ -263,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Ejecutar cada 5 segundos
     setInterval(procesarSolicitudes, 5000);
     procesarSolicitudes(); // Primera ejecución al cargar
-});
+})
 </script>
 
 </body>
