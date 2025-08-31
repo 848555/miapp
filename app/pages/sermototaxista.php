@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
         conectado = !conectado; // Cambiar estado  
         let estado = conectado ? 1 : 0;  
 
-        fetch('/app/include/toogle_estado.php', {  
+        fetch('/app/include/toggle_estado.php', {  
             method: 'POST',  
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },  
             body: 'estado=' + estado  
