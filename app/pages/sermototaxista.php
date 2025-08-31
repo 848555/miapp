@@ -35,6 +35,8 @@ $user_id = $_SESSION['id_usuario'];
 </div>
 <!-- Elemento de audio (puedes cambiar el archivo de sonido si deseas) -->
 <audio id="conexionSonido" src="/app/assets/sounds/conect.wav" preload="auto"></audio>
+<audio id="notificacionSonido" src="app/assets/sounds/level-up.mp3" preload="auto"></audio>
+
 
         <a href="/app/pages/inicio.php" class="btn1">Regresar</a>
         <form id="verSolicitudes" action="/app/include/aceptar_solicitud.php" method="post">
@@ -238,7 +240,7 @@ if (
     `;
 
     // 🔊 Reproducir sonido de notificación
-    const audio = document.getElementById('conexionSonido');
+    const audio = document.getElementById('notificacionSonido');
     audio.currentTime = 0;
     audio.play().catch(err => console.warn("Audio bloqueado:", err));
 
