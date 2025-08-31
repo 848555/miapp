@@ -169,7 +169,112 @@ document.addEventListener('DOMContentLoaded', function () {
 });  
     </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const contenedor = document.getElementById("contenedor");
+    const userId = <?= $_SESSION['id_usuario'] ?>;
+    let checking = false;
 
+    function obtenerSolicitudes() {
+        if (checking) return;
+        checking = true;
+
+        fetch(`/app/include/obtener_solicitudes.php?id_usuario=${userId}`)
+            .then(res => res.json())
+            .then(data => {
+                checking = false;
+                if (data.success) {
+                    mostrarSolicitudes(data.solicitudes);
+                } else {
+                    contenedor.innerHTML = "<p>No hay solicitudes ofrecidas.</p>";
+                }
+            })
+            .catch(err => {
+                checking = false;
+                console.error("Error al obtener solicitudes:", err);
+            });
+    }
+
+    function mostrarSolicitudes(solicitudes) {
+        if (!solicitudes || solicitudes.length === 0) {
+            contenedor.innerHTML = "<p>No tienes solicitudes por aceptar.</p>";
+            return;
+        }
+
+        let html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                        <th>Personas</th>
+                        <th>Motos</th>
+                        <th>Pago</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        solicitudes.forEach(s => {
+            html += `
+                <tr>
+                    <td>${s.origen}</td>
+                    <td>${s.destino}</td>
+                    <td>${s.cantidad_personas}</td>
+                    <td>${s.cantidad_motos}</td>
+                    <td>${s.metodo_pago}</td>
+                    <td>
+                        <button class="btn-aceptar" data-id="${s.id_solicitud}">Aceptar</button>
+                        <button class="btn-rechazar" data-id="${s.id_solicitud}">Rechazar</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += "</tbody></table>";
+        contenedor.innerHTML = html;
+
+        document.querySelectorAll(".btn-aceptar").forEach(btn => {
+            btn.addEventListener("click", () => aceptarSolicitud(btn.dataset.id));
+        });
+        document.querySelectorAll(".btn-rechazar").forEach(btn => {
+            btn.addEventListener("click", () => rechazarSolicitud(btn.dataset.id));
+        });
+    }
+
+    function aceptarSolicitud(idSolicitud) {
+        fetch("/app/include/aceptar_solicitud.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `id_solicitud=${idSolicitud}&id_usuario=${userId}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            if (data.success) obtenerSolicitudes();
+        })
+        .catch(err => console.error("Error al aceptar:", err));
+    }
+
+    function rechazarSolicitud(idSolicitud) {
+        fetch("/app/include/rechazar_solicitud.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `id_solicitud=${idSolicitud}&id_usuario=${userId}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            obtenerSolicitudes();
+        })
+        .catch(err => console.error("Error al rechazar:", err));
+    }
+
+    setInterval(obtenerSolicitudes, 5000);
+    obtenerSolicitudes();
+});
+</script>
 
 </body>
 </html>
