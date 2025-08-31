@@ -36,7 +36,6 @@ $user_id = $_SESSION['id_usuario'];
 <!-- Elemento de audio (puedes cambiar el archivo de sonido si deseas) -->
 <audio id="conexionSonido" src="/app/assets/sounds/conect.wav" preload="auto"></audio>
 
-        <div id="asignacion-mensaje"></div>
         <a href="/app/pages/inicio.php" class="btn1">Regresar</a>
         <form id="verSolicitudes" action="/app/include/aceptar_solicitud.php" method="post">
         
@@ -58,6 +57,9 @@ $user_id = $_SESSION['id_usuario'];
                 unset($_SESSION['warning_message']);
             }
             ?>
+
+                    <div id="asignacion-mensaje"></div>
+
         </form>
     </div>
 
