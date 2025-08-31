@@ -214,7 +214,8 @@ if (
 ) {
     mostrarSolicitud(dataAsignar.solicitud);
 } else {
-    contenedor.innerHTML = `<p>${dataAsignar.mensaje || 'No hay solicitudes pendientes para ti.' , "warning"}</p>`;
+ mostrarToast(dataAsignar.mensaje || "No hay solicitudes pendientes para ti.", "warning");
+
 }
             // 2️⃣ Reintentar asignaciones pendientes (cancelaciones/rechazos)
             await fetch("/app/include/reintentar_asignacion.php");
@@ -228,7 +229,11 @@ if (
 
     // Mostrar solicitud en pantalla
     function mostrarSolicitud(solicitud) {
-    contenedor.innerHTML = `
+        // Crear contenedor flotante
+    const toast = document.createElement("div");
+    toast.classList.add("toast", "success");
+
+     toast.innerHTML = `
         <h2>Nueva solicitud asignada:</h2>
         <p><strong>Origen:</strong> ${solicitud.origen}</p>
         <p><strong>Destino:</strong> ${solicitud.destino}</p>
@@ -239,6 +244,12 @@ if (
         <button id="btnRechazar" data-id="${solicitud.id_solicitud}">Rechazar</button>
     `;
 
+        // Agregar al body
+    document.body.appendChild(toast);
+
+    // Animación para mostrar
+    setTimeout(() => toast.classList.add("show"), 100);
+        
     // 🔊 Reproducir sonido de notificación
     const audio = document.getElementById('notificacionSonido');
     audio.currentTime = 0;
@@ -251,7 +262,15 @@ if (
     document.getElementById("btnRechazar").addEventListener("click", () => {
         manejarSolicitud("rechazar", solicitud.id_solicitud);
     });
+
+            // Desaparecer después de 5 segundos
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 500);
+    }, 5000);
+
 }
+    
 
     // Función aceptar/rechazar
     async function manejarSolicitud(accion, idSolicitud) {
