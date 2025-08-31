@@ -212,7 +212,7 @@ if (
 ) {
     mostrarSolicitud(dataAsignar.solicitud);
 } else {
-    contenedor.innerHTML = `<p>${dataAsignar.mensaje || 'No hay solicitudes pendientes para ti.'}</p>`;
+    contenedor.innerHTML = `<p>${dataAsignar.mensaje || 'No hay solicitudes pendientes para ti.' , "warning"}</p>`;
 }
             // 2️⃣ Reintentar asignaciones pendientes (cancelaciones/rechazos)
             await fetch("/app/include/reintentar_asignacion.php");
@@ -279,6 +279,22 @@ if (
     setInterval(procesarSolicitudes, 5000);
     procesarSolicitudes(); // Primera ejecución al cargar
 })
+
+
+                function mostrarToast(mensaje, tipo = "success") {
+    const toast = document.createElement("div");
+    toast.classList.add("toast", tipo);
+    toast.innerText = mensaje;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add("show"), 100);
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
+}
+
 </script>
 
 </body>
