@@ -301,7 +301,7 @@ $sql_acciones = "SELECT id_usuarios FROM usuarios";
                                                             <label for="rol" class="form-label">Rol</label>
                                                             <input type="text" class="form-control" name="rol" value="<?= $datos->roles ?>">
                                                         </div>
-                                                        <button type="submit" class="btn btn-primary w-100" id="btn-guardar-cambios">Guardar Cambios</button>
+<button type="submit" class="btn btn-primary w-100" id="btn-guardar-cambios-<?= $datos->id_usuarios ?>">Guardar Cambios</button>
                                                     </form>
                                                 </div>
                                             </div>
