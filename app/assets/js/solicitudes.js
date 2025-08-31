@@ -46,6 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(escucharAsignaciones, 10000);
 });
 
+let solicitudesActuales = new Set(); // Guardar IDs de solicitudes ya mostradas
+
 function fetchSolicitudes(page = 1) {
     fetch(`/app/include/obtener_solicitudes.php?page=${page}`)
         .then(res => res.json())
@@ -53,28 +55,31 @@ function fetchSolicitudes(page = 1) {
             const container = document.getElementById('solicitudes-container');
             const pagination = document.getElementById('pagination');
 
-            container.innerHTML = '';
             pagination.innerHTML = '';
 
             if (data.solicitudes.length > 0) {
                 data.solicitudes.forEach(row => {
-                    const div = document.createElement('div');
-                    div.classList.add('solicitud');
-                    div.innerHTML = `
-                        <h3>${row.Nombres}</h3>
-                        <h3>${row.Apellidos}</h3>
-                        <p><strong>Origen:</strong> ${row.origen}</p>
-                        <p><strong>Destino:</strong> ${row.destino}</p>
-                        <p><strong>Personas:</strong> ${row.cantidad_personas}</p>
-                        <p><strong>Motos:</strong> ${row.cantidad_motos}</p>
-                        <p><strong>Método:</strong> ${row.metodo_pago}</p>
-                        <p><a href='/app/include/aceptar_solicitud.php?id_solicitud=${row.id_solicitud}&id_usuario=${row.id_usuarios}'>Aceptar Solicitud</a></p>
-                        <p><button class="btn1" onclick="openCalificarModal(${row.id_solicitud}, ${row.id_usuarios})">Calificar al Cliente</button></p>
-                        <p><button class="btn2" onclick="terminarServicio(${row.id_solicitud})">Terminar Servicio</button></p>
-                    `;
-                    container.appendChild(div);
+                    if (!solicitudesActuales.has(row.id_solicitud)) {
+                        // Crear nuevo elemento solo si no existe
+                        const div = document.createElement('div');
+                        div.classList.add('solicitud');
+                        div.innerHTML = `
+                            <h3>${row.Nombres} ${row.Apellidos}</h3>
+                            <p><strong>Origen:</strong> ${row.origen}</p>
+                            <p><strong>Destino:</strong> ${row.destino}</p>
+                            <p><strong>Personas:</strong> ${row.cantidad_personas}</p>
+                            <p><strong>Motos:</strong> ${row.cantidad_motos}</p>
+                            <p><strong>Método:</strong> ${row.metodo_pago}</p>
+                            <p><a href='/app/include/aceptar_solicitud.php?id_solicitud=${row.id_solicitud}&id_usuario=${row.id_usuarios}'>Aceptar Solicitud</a></p>
+                            <p><button class="btn1" onclick="openCalificarModal(${row.id_solicitud}, ${row.id_usuarios})">Calificar al Cliente</button></p>
+                            <p><button class="btn2" onclick="terminarServicio(${row.id_solicitud})">Terminar Servicio</button></p>
+                        `;
+                        container.prepend(div); // Agregar al inicio para que las nuevas aparezcan arriba
+                        solicitudesActuales.add(row.id_solicitud);
+                    }
                 });
 
+                // Paginación
                 for (let i = 1; i <= data.total_pages; i++) {
                     const pageLink = document.createElement('a');
                     pageLink.classList.add('page-link');
@@ -83,7 +88,7 @@ function fetchSolicitudes(page = 1) {
                     pageLink.textContent = i;
                     pagination.appendChild(pageLink);
                 }
-            } else {
+            } else if (solicitudesActuales.size === 0) {
                 container.innerHTML = '<p>No se encontraron registros.</p>';
             }
         })
