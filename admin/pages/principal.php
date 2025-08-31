@@ -53,7 +53,7 @@ $sql_acciones = "SELECT id_usuarios FROM usuarios";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crud</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/35f3448c23.js" crossorigin="anonymous"></script>
 </head>
 
@@ -542,7 +542,6 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
     <!-- Scripts necesarios de Bootstrap y JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12cX3mB90+JN1+W8cl/xpRXVlmiHE7fZpL4pacoLHZYNt1w1" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/admin/assets/js/buscador.js"></script>
     <script src="/admin/assets/js/script.js"></script>
