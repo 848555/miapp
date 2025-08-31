@@ -97,6 +97,6 @@ if ($stmt_insert) {
 $conexion->close();
 
 // Redirigir a la página de solicitudes
-header("Location: ../pages/sermototaxista.php");
+header("Location: ../../../pages/sermototaxista.php");
 exit();
 ?>
