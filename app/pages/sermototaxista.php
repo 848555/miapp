@@ -129,8 +129,7 @@ $user_id = $_SESSION['id_usuario'];
         const userId = <?php echo $user_id; ?>;
     </script>
     <script src="/app/assets/js/solicitudes.js"></script>
-    <script>  
-documen<script>
+ <script>
 document.addEventListener('DOMContentLoaded', function () {
     const btn = document.getElementById('toggleOnlineBtn');
     const icono = document.getElementById('estadoIcono');
@@ -139,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let conectado = false; // Estado inicial en memoria
 
     // 🔹 Consultar estado real al cargar
-    fetch('/app/include/get_estado.php')
+    fetch('/app/include/consultar_estado.php')
         .then(res => res.json())
         .then(data => {
             conectado = data.en_linea;
@@ -160,7 +159,10 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             if (data.success) {
                 actualizarBoton();
-                if (estado === 1) audio.play();
+                if (estado === 1) {
+                    audio.currentTime = 0; // 🔹 Reinicia el sonido
+                    audio.play().catch(err => console.warn("Audio bloqueado:", err));
+                }
             } else {
                 alert(data.message || 'Error al cambiar estado');
             }
@@ -178,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
-</script>
+ </script>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
