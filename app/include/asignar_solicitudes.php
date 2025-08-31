@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: application/json; charset=utf-8');
 include(__DIR__ . '../../../config/conexion.php');
 
 // Buscar la primera solicitud pendiente
