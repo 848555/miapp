@@ -14,28 +14,40 @@ $limit = 5; // Número de registros por página
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
-// Obtener las solicitudes excluyendo las completadas
+// Obtener las solicitudes excluyendo completadas y las ofrecidas al usuario
 $sql = "SELECT s.*, u.Nombres, u.Apellidos
         FROM solicitudes s
         INNER JOIN usuarios u ON s.id_usuarios = u.id_usuarios
-        WHERE s.id_usuarios != ? AND s.estado != 'completada'
+        WHERE s.id_usuarios != ? 
+          AND s.estado != 'completada'
+          AND s.id_solicitud NOT IN (
+              SELECT id_solicitud 
+              FROM solicitudes_ofrecidas 
+              WHERE id_usuario = ?
+          )
         LIMIT ?, ?";
 $stmt = $conexion->prepare($sql);
-$stmt->bind_param("iii", $user_id, $offset, $limit);
+$stmt->bind_param("iiii", $user_id, $user_id, $offset, $limit);
 $stmt->execute();
 $result = $stmt->get_result();
 
 $solicitudes = [];
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $solicitudes[] = $row;
-    }
+while ($row = $result->fetch_assoc()) {
+    $solicitudes[] = $row;
 }
 
-// Obtener el número total de registros excluyendo las completadas
-$sql = "SELECT COUNT(*) as total FROM solicitudes WHERE id_usuarios != ? AND estado != 'completada'";
+// Contar total de registros excluyendo completadas y ofrecidas
+$sql = "SELECT COUNT(*) as total 
+        FROM solicitudes 
+        WHERE id_usuarios != ? 
+          AND estado != 'completada'
+          AND id_solicitud NOT IN (
+              SELECT id_solicitud 
+              FROM solicitudes_ofrecidas 
+              WHERE id_usuario = ?
+          )";
 $stmt = $conexion->prepare($sql);
-$stmt->bind_param("i", $user_id);
+$stmt->bind_param("ii", $user_id, $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $total_records = $result->fetch_assoc()['total'];
@@ -50,3 +62,4 @@ $response = [
 
 echo json_encode($response);
 ?>
+
