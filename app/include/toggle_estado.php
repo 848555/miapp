@@ -1,5 +1,6 @@
 <?php
 session_start();
+header('Content-Type: application/json; charset=utf-8');
 include(__DIR__ . '../../../config/conexion.php');
 
 if (!isset($_SESSION['id_usuario'])) {
@@ -7,7 +8,7 @@ if (!isset($_SESSION['id_usuario'])) {
     exit;
 }
 
-$id_usuario = $_SESSION['id_usuario'];
+$id_usuario = (int)$_SESSION['id_usuario'];
 $estado = isset($_POST['estado']) ? intval($_POST['estado']) : 0;
 
 // Actualizar el estado en la base de datos
