@@ -182,110 +182,86 @@ document.addEventListener('DOMContentLoaded', function () {
 });
  </script>
 
-<script>
+
+    <script>
 document.addEventListener("DOMContentLoaded", () => {
     const contenedor = document.getElementById("contenedor");
     const userId = <?= $_SESSION['id_usuario'] ?>;
     let checking = false;
 
-    function obtenerSolicitudes() {
+    // Función principal: reintentar asignaciones y asignar nuevas solicitudes
+    async function procesarSolicitudes() {
         if (checking) return;
         checking = true;
 
-        fetch(`/app/include/obtener_solicitudes.php?id_usuario=${userId}`)
-            .then(res => res.json())
-            .then(data => {
-                checking = false;
-                if (data.success) {
-                    mostrarSolicitudes(data.solicitudes);
-                } else {
-                    contenedor.innerHTML = "<p>No hay solicitudes ofrecidas.</p>";
-                }
-            })
-            .catch(err => {
-                checking = false;
-                console.error("Error al obtener solicitudes:", err);
-            });
+        try {
+            // 1️⃣ Reintentar asignaciones pendientes
+            await fetch("/app/include/reintentar_asignacion.php");
+
+            // 2️⃣ Asignar nuevas solicitudes
+            const res = await fetch("/app/include/asignar_solicitud.php");
+            const data = await res.json();
+            checking = false;
+
+            if (data.asignada && data.mototaxista.id_usuario == userId) {
+                mostrarSolicitud(data.solicitud);
+            } else {
+                contenedor.innerHTML = "<p>No hay solicitudes pendientes para ti.</p>";
+            }
+
+        } catch (err) {
+            checking = false;
+            console.error("Error al procesar solicitudes:", err);
+        }
     }
 
-    function mostrarSolicitudes(solicitudes) {
-        if (!solicitudes || solicitudes.length === 0) {
-            contenedor.innerHTML = "<p>No tienes solicitudes por aceptar.</p>";
-            return;
-        }
-
-        let html = `
-            <table>
-                <thead>
-                    <tr>
-                        <th>Origen</th>
-                        <th>Destino</th>
-                        <th>Personas</th>
-                        <th>Motos</th>
-                        <th>Pago</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
+    // Mostrar solicitud en pantalla
+    function mostrarSolicitud(solicitud) {
+        contenedor.innerHTML = `
+            <h2>Nueva solicitud asignada:</h2>
+            <p><strong>Origen:</strong> ${solicitud.origen}</p>
+            <p><strong>Destino:</strong> ${solicitud.destino}</p>
+            <p><strong>Personas:</strong> ${solicitud.cantidad_personas}</p>
+            <p><strong>Motos:</strong> ${solicitud.cantidad_motos}</p>
+            <p><strong>Método de pago:</strong> ${solicitud.metodo_pago}</p>
+            <button id="btnAceptar" data-id="${solicitud.id_solicitud}">Aceptar</button>
+            <button id="btnRechazar" data-id="${solicitud.id_solicitud}">Rechazar</button>
         `;
 
-        solicitudes.forEach(s => {
-            html += `
-                <tr>
-                    <td>${s.origen}</td>
-                    <td>${s.destino}</td>
-                    <td>${s.cantidad_personas}</td>
-                    <td>${s.cantidad_motos}</td>
-                    <td>${s.metodo_pago}</td>
-                    <td>
-                        <button class="btn-aceptar" data-id="${s.id_solicitud}">Aceptar</button>
-                        <button class="btn-rechazar" data-id="${s.id_solicitud}">Rechazar</button>
-                    </td>
-                </tr>
-            `;
+        document.getElementById("btnAceptar").addEventListener("click", () => {
+            manejarSolicitud("aceptar", solicitud.id_solicitud);
         });
 
-        html += "</tbody></table>";
-        contenedor.innerHTML = html;
-
-        document.querySelectorAll(".btn-aceptar").forEach(btn => {
-            btn.addEventListener("click", () => aceptarSolicitud(btn.dataset.id));
-        });
-        document.querySelectorAll(".btn-rechazar").forEach(btn => {
-            btn.addEventListener("click", () => rechazarSolicitud(btn.dataset.id));
+        document.getElementById("btnRechazar").addEventListener("click", () => {
+            manejarSolicitud("rechazar", solicitud.id_solicitud);
         });
     }
 
-    function aceptarSolicitud(idSolicitud) {
-        fetch("/app/include/aceptar_solicitud.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `id_solicitud=${idSolicitud}&id_usuario=${userId}`
-        })
-        .then(res => res.json())
-        .then(data => {
+    // Función aceptar/rechazar
+    async function manejarSolicitud(accion, idSolicitud) {
+        const url = accion === "aceptar" 
+            ? "/app/include/aceptar_solicitud.php"
+            : "/app/include/rechazar_solicitud.php";
+
+        try {
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `id_solicitud=${idSolicitud}&id_usuario=${userId}`
+            });
+
+            const data = await res.json();
             alert(data.message);
-            if (data.success) obtenerSolicitudes();
-        })
-        .catch(err => console.error("Error al aceptar:", err));
+            procesarSolicitudes(); // Revisar nuevas solicitudes
+
+        } catch (err) {
+            console.error(`Error al ${accion} solicitud:`, err);
+        }
     }
 
-    function rechazarSolicitud(idSolicitud) {
-        fetch("/app/include/rechazar_solicitud.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `id_solicitud=${idSolicitud}&id_usuario=${userId}`
-        })
-        .then(res => res.json())
-        .then(data => {
-            alert(data.message);
-            obtenerSolicitudes();
-        })
-        .catch(err => console.error("Error al rechazar:", err));
-    }
-
-    setInterval(obtenerSolicitudes, 5000);
-    obtenerSolicitudes();
+    // Ejecutar cada 5 segundos
+    setInterval(procesarSolicitudes, 5000);
+    procesarSolicitudes(); // Primera ejecución al cargar
 });
 </script>
 
