@@ -129,32 +129,45 @@ $user_id = $_SESSION['id_usuario'];
         const userId = <?php echo $user_id; ?>;
     </script>
     <script src="/app/assets/js/solicitudes.js"></script>
-    
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const btn = document.getElementById('toggleOnlineBtn');
-    const texto = document.getElementById('estadoTexto');
-    const icono = document.getElementById('estadoIcono');
-    const audio = document.getElementById('conexionSonido');
+    <script>  
+document.addEventListener('DOMContentLoaded', function () {  
+    const btn = document.getElementById('toggleOnlineBtn');  
+    const texto = document.getElementById('estadoTexto');  
+    const icono = document.getElementById('estadoIcono');  
+    const audio = document.getElementById('conexionSonido');  
 
-    let conectado = false; // Estado inicial
+    let conectado = false; // Estado inicial  
 
-    btn.addEventListener('click', function () {
-        conectado = !conectado; // Cambiar estado
+    btn.addEventListener('click', function () {  
+        conectado = !conectado; // Cambiar estado  
+        let estado = conectado ? 1 : 0;  
 
-        if (conectado) {
-            btn.classList.add('activo');
-            texto.textContent = 'Conectado';
-            icono.setAttribute('name', 'power');
-            audio.play(); // Reproduce sonido al conectarse
-        } else {
-            btn.classList.remove('activo');
-            texto.textContent = 'Desconectado';
-            icono.setAttribute('name', 'power-outline');
-        }
-   });
-});
-</script>
+        fetch('/app/include/toogle_estado.php', {  
+            method: 'POST',  
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },  
+            body: 'estado=' + estado  
+        })  
+        .then(res => res.json())  
+        .then(data => {  
+            if (data.success) {  
+                if (estado === 1) {  
+                    btn.classList.add('activo');  
+                    texto.textContent = 'Conectado';  
+                    icono.setAttribute('name', 'power');  
+                    audio.play();  
+                } else {  
+                    btn.classList.remove('activo');  
+                    texto.textContent = 'Desconectado';  
+                    icono.setAttribute('name', 'power-outline');  
+                }  
+            } else {  
+                alert(data.message || 'Error al cambiar estado');  
+            }  
+        })  
+        .catch(err => console.error(err));  
+    });  
+});  
+    </script>
 
 
 
