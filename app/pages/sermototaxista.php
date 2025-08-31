@@ -224,25 +224,30 @@ if (
 
     // Mostrar solicitud en pantalla
     function mostrarSolicitud(solicitud) {
-        contenedor.innerHTML = `
-            <h2>Nueva solicitud asignada:</h2>
-            <p><strong>Origen:</strong> ${solicitud.origen}</p>
-            <p><strong>Destino:</strong> ${solicitud.destino}</p>
-            <p><strong>Personas:</strong> ${solicitud.cantidad_personas}</p>
-            <p><strong>Motos:</strong> ${solicitud.cantidad_motos}</p>
-            <p><strong>Método de pago:</strong> ${solicitud.metodo_pago}</p>
-            <button id="btnAceptar" data-id="${solicitud.id_solicitud}">Aceptar</button>
-            <button id="btnRechazar" data-id="${solicitud.id_solicitud}">Rechazar</button>
-        `;
+    contenedor.innerHTML = `
+        <h2>Nueva solicitud asignada:</h2>
+        <p><strong>Origen:</strong> ${solicitud.origen}</p>
+        <p><strong>Destino:</strong> ${solicitud.destino}</p>
+        <p><strong>Personas:</strong> ${solicitud.cantidad_personas}</p>
+        <p><strong>Motos:</strong> ${solicitud.cantidad_motos}</p>
+        <p><strong>Método de pago:</strong> ${solicitud.metodo_pago}</p>
+        <button id="btnAceptar" data-id="${solicitud.id_solicitud}">Aceptar</button>
+        <button id="btnRechazar" data-id="${solicitud.id_solicitud}">Rechazar</button>
+    `;
 
-        document.getElementById("btnAceptar").addEventListener("click", () => {
-            manejarSolicitud("aceptar", solicitud.id_solicitud);
-        });
+    // 🔊 Reproducir sonido de notificación
+    const audio = document.getElementById('conexionSonido');
+    audio.currentTime = 0;
+    audio.play().catch(err => console.warn("Audio bloqueado:", err));
 
-        document.getElementById("btnRechazar").addEventListener("click", () => {
-            manejarSolicitud("rechazar", solicitud.id_solicitud);
-        });
-    }
+    document.getElementById("btnAceptar").addEventListener("click", () => {
+        manejarSolicitud("aceptar", solicitud.id_solicitud);
+    });
+
+    document.getElementById("btnRechazar").addEventListener("click", () => {
+        manejarSolicitud("rechazar", solicitud.id_solicitud);
+    });
+}
 
     // Función aceptar/rechazar
     async function manejarSolicitud(accion, idSolicitud) {
