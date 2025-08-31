@@ -28,10 +28,10 @@ $user_id = $_SESSION['id_usuario'];
        
              <h1>Solicitudes Por Aceptar</h1><br>
        <div class="estado-en-linea">
-    <button id="toggleOnlineBtn" class="boton-estado" type="button">
-         <ion-icon id="estadoIcono" name="power-outline"ize="small"></ion-icon>
-        <span id="estadoTexto">Desconectado</span>
-    </button>
+    <button id="toggleOnlineBtn" class="boton-estado" type="button">  
+    <ion-icon id="estadoIcono" name="power-outline" size="large"></ion-icon>  
+</button>  
+
 </div>
 <!-- Elemento de audio (puedes cambiar el archivo de sonido si deseas) -->
 <audio id="conexionSonido" src="/app/assets/sounds/conect.wav" preload="auto"></audio>
@@ -130,44 +130,55 @@ $user_id = $_SESSION['id_usuario'];
     </script>
     <script src="/app/assets/js/solicitudes.js"></script>
     <script>  
-document.addEventListener('DOMContentLoaded', function () {  
-    const btn = document.getElementById('toggleOnlineBtn');  
-    const texto = document.getElementById('estadoTexto');  
-    const icono = document.getElementById('estadoIcono');  
-    const audio = document.getElementById('conexionSonido');  
+documen<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const btn = document.getElementById('toggleOnlineBtn');
+    const icono = document.getElementById('estadoIcono');
+    const audio = document.getElementById('conexionSonido');
 
-    let conectado = false; // Estado inicial  
+    let conectado = false; // Estado inicial en memoria
 
-    btn.addEventListener('click', function () {  
-        conectado = !conectado; // Cambiar estado  
-        let estado = conectado ? 1 : 0;  
+    // 🔹 Consultar estado real al cargar
+    fetch('/app/include/get_estado.php')
+        .then(res => res.json())
+        .then(data => {
+            conectado = data.en_linea;
+            actualizarBoton();
+        })
+        .catch(err => console.error("Error obteniendo estado:", err));
 
-        fetch('/app/include/toggle_estado.php', {  
-            method: 'POST',  
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },  
-            body: 'estado=' + estado  
-        })  
-        .then(res => res.json())  
-        .then(data => {  
-            if (data.success) {  
-                if (estado === 1) {  
-                    btn.classList.add('activo');  
-                    texto.textContent = 'Conectado';  
-                    icono.setAttribute('name', 'power');  
-                    audio.play();  
-                } else {  
-                    btn.classList.remove('activo');  
-                    texto.textContent = 'Desconectado';  
-                    icono.setAttribute('name', 'power-outline');  
-                }  
-            } else {  
-                alert(data.message || 'Error al cambiar estado');  
-            }  
-        })  
-        .catch(err => console.error(err));  
-    });  
-});  
-    </script>
+    btn.addEventListener('click', function () {
+        conectado = !conectado;
+        let estado = conectado ? 1 : 0;
+
+        fetch('/app/include/toggle_estado.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'estado=' + estado
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                actualizarBoton();
+                if (estado === 1) audio.play();
+            } else {
+                alert(data.message || 'Error al cambiar estado');
+            }
+        })
+        .catch(err => console.error("Error en toggle:", err));
+    });
+
+    function actualizarBoton() {
+        if (conectado) {
+            btn.classList.add('activo');
+            icono.setAttribute('name', 'power');
+        } else {
+            btn.classList.remove('activo');
+            icono.setAttribute('name', 'power-outline');
+        }
+    }
+});
+</script>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
