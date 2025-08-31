@@ -36,6 +36,7 @@ $user_id = $_SESSION['id_usuario'];
 <!-- Elemento de audio (puedes cambiar el archivo de sonido si deseas) -->
 <audio id="conexionSonido" src="/app/assets/sounds/conect.wav" preload="auto"></audio>
 
+        <div id="asignacion-mensaje"></div>
         <a href="/app/pages/inicio.php" class="btn1">Regresar</a>
         <form id="verSolicitudes" action="/app/include/aceptar_solicitud.php" method="post">
         
@@ -185,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     <script>
 document.addEventListener("DOMContentLoaded", () => {
-    const contenedor = document.getElementById("contenedor");
+    const contenedor = document.getElementById("asignacion-mensaje");
     const userId = <?= $_SESSION['id_usuario'] ?>;
     let checking = false;
 
