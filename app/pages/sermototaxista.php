@@ -205,7 +205,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const resAsignar = await fetch("/app/include/asignar_solicitudes.php");
 const dataAsignar = await resAsignar.json();
 
-console.log("Respuesta asignar:", dataAsignar); // Para depuración
 
 if (
     dataAsignar.asignada &&
