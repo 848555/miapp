@@ -38,7 +38,7 @@ $mtx = $conexion->query("
 ");
 
 if ($mtx->num_rows === 0) {
-    echo json_encode(['asignada' => false, 'mensaje' => 'No hay mototaxistas disponibles']);
+    echo json_encode(['asignada' => false, 'mensaje' => 'No te has conectado no seras priorizado para servicios']);
     exit;
 }
 
