@@ -1,30 +1,36 @@
-<?php
-include(__DIR__ . '../../../config/conexion.php');
 
-// Obtener solicitudes no asignadas
-$solicitud = $conexion->query("SELECT * FROM solicitudes WHERE estado = 'pendiente' ORDER BY id_solicitud ASC LIMIT 1");
+<?php  
+include(__DIR__ . '../../../config/conexion.php');  
 
-if ($solicitud->num_rows > 0) {
-    $sol = $solicitud->fetch_assoc();
+// Obtener la primera solicitud pendiente
+$solicitud = $conexion->query("SELECT * FROM solicitudes WHERE estado = 'pendiente' ORDER BY id_solicitud ASC LIMIT 1");  
 
-    // Obtener mototaxista en línea con menor prioridad y disponible
-    $mtx = $conexion->query("SELECT * FROM mototaxistas_en_linea WHERE en_linea = 1 AND en_servicio = 0 ORDER BY prioridad ASC LIMIT 1");
+if ($solicitud->num_rows > 0) {  
+    $sol = $solicitud->fetch_assoc();  
 
-    if ($mtx->num_rows > 0) {
-        $mototaxista = $mtx->fetch_assoc();
+    // Buscar mototaxista libre con menor prioridad
+    $mtx = $conexion->query("SELECT * FROM mototaxistas_en_linea WHERE en_linea = 1 AND en_servicio = 0 ORDER BY prioridad ASC LIMIT 1");  
 
-        // Asignar solicitud provisionalmente (no cambiar el estado aún)
-        echo json_encode([
-            'asignada' => true,
-            'id_usuario' => $mototaxista['id_usuario'],
-            'solicitud' => $sol
-        ]);
+    if ($mtx->num_rows > 0) {  
+        $mototaxista = $mtx->fetch_assoc();  
 
-        mysqli_close($conexion); // 👈 cerrar aquí
-        exit;
-    }
-}
+        // ⚡️ Actualizar solicitud: ya no está pendiente, ahora está ofrecida
+        $stmt = $conexion->prepare("UPDATE solicitudes SET estado = 'ofrecida', id_usuarios = ? WHERE id_solicitud = ?");
+        $stmt->bind_param("ii", $mototaxista['id_usuario'], $sol['id_solicitud']);
+        $stmt->execute();
+        $stmt->close();
+
+        echo json_encode([  
+            'asignada'   => true,  
+            'id_usuario' => $mototaxista['id_usuario'],  
+            'solicitud'  => $sol  
+        ]);  
+
+        mysqli_close($conexion);  
+        exit;  
+    }  
+}  
 
 // Si no hay solicitud o no hay mototaxista disponible
-echo json_encode(['asignada' => false]);
+echo json_encode(['asignada' => false]);  
 mysqli_close($conexion);
