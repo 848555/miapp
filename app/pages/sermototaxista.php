@@ -199,15 +199,19 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             // 1️⃣ Asignar nuevas solicitudes
             const resAsignar = await fetch("/app/include/asignar_solicitud.php");
-            const dataAsignar = await resAsignar.json();
+const dataAsignar = await resAsignar.json();
 
-            // Mostrar solicitud solo si es para el mototaxista actual
-            if (dataAsignar.asignada && dataAsignar.mototaxista.id_usuario == userId) {
-                mostrarSolicitud(dataAsignar.solicitud);
-            } else {
-                contenedor.innerHTML = "<p>No hay solicitudes pendientes para ti.</p>";
-            }
+console.log("Respuesta asignar:", dataAsignar); // Para depuración
 
+if (
+    dataAsignar.asignada &&
+    dataAsignar.mototaxista &&
+    parseInt(dataAsignar.mototaxista.id_usuario) === parseInt(userId)
+) {
+    mostrarSolicitud(dataAsignar.solicitud);
+} else {
+    contenedor.innerHTML = `<p>${dataAsignar.mensaje || 'No hay solicitudes pendientes para ti.'}</p>`;
+}
             // 2️⃣ Reintentar asignaciones pendientes (cancelaciones/rechazos)
             await fetch("/app/include/reintentar_asignacion.php");
 
