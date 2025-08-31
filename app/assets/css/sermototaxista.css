@@ -685,63 +685,29 @@ body.modo-oscuro ion-icon {
 
 
 
-
-.mensaje-tarjeta {
-    background-color: #f9f9f9;  /* Fondo claro */
-    border-left: 5px solid #28a745;  /* Línea verde indicando “nuevo” */
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    padding: 20px;
-    margin-top: 20px;
-    animation: fadeIn 0.5s ease-out;
-}
-
-.mensaje-tarjeta h2 {
-    color: #333;
-    margin-bottom: 15px;
-}
-
-.mensaje-tarjeta p {
-    margin: 5px 0;
-    font-size: 16px;
-    color: #555;
-}
-
-.botones-solicitud {
-    margin-top: 15px;
-}
-
-.botones-solicitud button {
-    padding: 10px 20px;
-    margin-right: 10px;
-    border: none;
+/* Notificación flotante */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    min-width: 250px;
+    padding: 15px;
     border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-aceptar {
-    background-color: #28a745;
     color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.5s, transform 0.5s;
 }
 
-.btn-aceptar:hover {
-    background-color: #218838;
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.btn-rechazar {
-    background-color: #dc3545;
-    color: white;
-}
-
-.btn-rechazar:hover {
-    background-color: #c82333;
-}
-
-@keyframes fadeIn {
-    from {opacity: 0; transform: translateY(-10px);}
-    to {opacity: 1; transform: translateY(0);}
-}
+.toast.success { background-color: #4CAF50; }
+.toast.error { background-color: #f44336; }
+.toast.warning { background-color: #2196F3; }
 
 
