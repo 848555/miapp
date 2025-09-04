@@ -5,7 +5,11 @@ FROM composer:latest AS composer_stage
 FROM php:8.2-apache
 
 # Instala extensiones necesarias
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libzip-dev \
+    && docker-php-ext-install zip mysqli pdo pdo_mysql
 
 # Habilita mod_rewrite
 RUN a2enmod rewrite
@@ -20,7 +24,7 @@ WORKDIR /var/www/html
 COPY . .
 
 # 📌 Ejecuta composer install para instalar dependencias
-RUN composer install --no-dev --optimize-autoloader
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
 
 # Otorga permisos a Apache
 RUN chown -R www-data:www-data /var/www/html
