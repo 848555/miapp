@@ -1,8 +1,8 @@
 <?php
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
-require __DIR__ . '/../vendor/autoload.php'; // Asegúrate de tener PHPMailer con Composer
+require __DIR__ . '/../vendor/autoload.php';
+    
 include(__DIR__ . '/../config/conexion.php');
 session_start();
 
