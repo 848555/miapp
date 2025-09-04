@@ -19,6 +19,9 @@ WORKDIR /var/www/html
 # Copia todos los archivos del proyecto (incluye vendor si ya lo subiste)
 COPY . .
 
+# 📌 Ejecuta composer install para instalar dependencias
+RUN composer install --no-dev --optimize-autoloader
+
 # Otorga permisos a Apache
 RUN chown -R www-data:www-data /var/www/html
 
